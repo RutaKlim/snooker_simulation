@@ -1,8 +1,9 @@
 This will just be a rough place for me to write notes etc.
 
 Things to implement:
-1. draw the table
-2. create and organise the JS files i need 
+DONE 1. draw the table
+DONE 2. create and organise the JS files i need 
+3. add balls on table in starting positions 
 
 - design snooker icon for fun
-
+- need to make it so that for the table size you can only give the width, then height adapts as it must be half the size

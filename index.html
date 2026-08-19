@@ -6,16 +6,46 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Snooker Simulation</title>
 		<script defer type="module" src="/src/main.js"></script>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Roboto+Serif:ital,opsz,wght@0,8..144,100..900;1,8..144,100..900&family=Roboto+Slab:wght@100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+			rel="stylesheet"
+		/>
 	</head>
-	<body class="bg-black h-screen">
-		<div id="app"></div>
-		<h1 class="text-5xl text-orange-600 font-bold border">
-			Snooker simulation
-		</h1>
-		<div class="flex justify-center items-center w-full">
-			<div class="p-5 m-6 bg-amber-950 rounded-2xl">
-				<canvas id="table" width="600" height="300"></canvas>
+	<body class="h-screen max-w-5xl mx-auto text-gray-100 mb-15">
+		<!-- start - HEADER -->
+		<header class="mx-5 mb-8">
+			<div class="text-5xl font-bold mt-5">Snooker simulation</div>
+			<div class="text-xl mt-2 font-slab">Using HTML Canvas and JS.</div>
+		</header>
+		<!-- end - HEADER -->
+		<!-- start - SNOOKER TABLE -->
+		<section>
+			<div class="flex justify-center items-center w-full">
+				<div class="p-5 m-6 bg-amber-950 rounded-2xl">
+					<canvas id="table" width="600" height="300"></canvas>
+				</div>
 			</div>
-		</div>
+		</section>
+		<!-- end - SNOOKER TABLE -->
+		<!-- start - INTRO -->
+		<section class="mx-5 mt-8 pb-10">
+			<div class="text-4xl font-medium">Introduction</div>
+			<div class="w-full h-0.5 bg-gray-800 mt-2 mb-5"></div>
+			<p class="mb-3 text-lg">
+				This project is a snooker simulation that is made using HTML Canvas and
+				JS, as I wanted to implement real physics and expand develop my JS
+				skills and my knowledge in OOP and general problem-solving within
+				programming.
+			</p>
+			<p class="text-lg">
+				Throughout this, I will show the steps in order of what I implement,
+				such as firstly making a ball move, accelerate, decelerate due to
+				friction, collide with another ball, cushion shots and etc.
+			</p>
+		</section>
+		<!-- end - INTRO -->
+		<!-- section #1 -->
 	</body>
 </html>
