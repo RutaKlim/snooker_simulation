@@ -1,15 +1,32 @@
-class Ball {
-	constructor(colour, isRed, points, onTable, startingPos, curPos) {
-		this.colour = colour;
+export class Ball {
+	constructor(
+		colour,
+		isRed,
+		points,
+		onTable,
+		startingPosX,
+		startingPosY,
+		curPos,
+	) {
+		this._colour = colour;
 		this.isRed = isRed;
 		this.points = points;
 		this.onTable = onTable;
-		this.startingPos = startingPos;
+		this._startingPosX = startingPosX;
+		this._startingPosY = startingPosY;
 		this.curPos = curPos;
+	}
+
+	get colour() {
+		return this._colour;
+	}
+
+	get startingPos() {
+		return [this._startingPosX, this._startingPosY];
 	}
 }
 
-class CueBall extends Ball {
+export class CueBall extends Ball {
 	constructor(
 		colour,
 		onTable,
