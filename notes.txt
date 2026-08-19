@@ -1,0 +1,8 @@
+This will just be a rough place for me to write notes etc.
+
+Things to implement:
+1. draw the table
+2. create and organise the JS files i need 
+
+- design snooker icon for fun
+

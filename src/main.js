@@ -1,11 +1,4 @@
 import "./style.css";
-import javascriptLogo from "./assets/javascript.svg";
-import viteLogo from "./assets/vite.svg";
-import heroImg from "./assets/hero.png";
-import { setupCounter } from "./counter.js";
+// import viteLogo from "./assets/vite.svg";
 
-// document.querySelector("#app").innerHTML = `
-//   <h1 class="text-5xl font-bold text-orange-600">
-//       I hope this works
-//   </h1>
-//   `;
+import "./render/drawTable.js";
