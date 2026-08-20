@@ -33,7 +33,7 @@
 		</section>
 		<!-- end - SNOOKER TABLE -->
 		<!-- start - INTRO -->
-		<section class="mx-5 mt-8 pb-10">
+		<section class="mx-5 mt-8 pb-7">
 			<div class="text-4xl font-medium">Introduction</div>
 			<div class="w-full h-0.5 bg-gray-800 mt-2 mb-5"></div>
 			<p class="mb-3 text-lg">
@@ -49,6 +49,52 @@
 			</p>
 		</section>
 		<!-- end - INTRO -->
-		<!-- section #1 -->
+		<!-- section #1 - printing everything -->
+		<section class="mx-5 mt-8 pb-7">
+			<div class="text-4xl font-medium">#1 Create the board</div>
+			<div class="w-full h-0.5 bg-gray-800 mt-2 mb-5"></div>
+			<p class="mb-3 text-lg">
+				Firstly I drew out the board and balls using just HTML Canvas, and all
+				the ball objects, and in their starting position.
+			</p>
+			<!-- start - SNOOKER TABLE -->
+			<div class="flex justify-center items-center w-full">
+				<div class="p-5 m-6 bg-amber-950 rounded-2xl">
+					<canvas id="table_drawing" width="600" height="300"></canvas>
+				</div>
+			</div>
+			<!-- end - SNOOKER TABLE -->
+		</section>
+		<!-- section #2 - moving a ball -->
+		<section class="mx-5 mt-8 pb-7">
+			<div class="text-4xl font-medium">#2 Moving a ball</div>
+			<div class="w-full h-0.5 bg-gray-800 mt-2 mb-5"></div>
+			<p class="mb-3 text-lg">I will move a simple ball</p>
+			<!-- start - canvas -->
+			<div class="flex justify-center items-center w-full">
+				<canvas id="moving_ball_1" width="500" height="100"></canvas>
+			</div>
+			<!-- end - canvas -->
+			<div class="flex justify-center gap-6 mt-2">
+				<button
+					id="test1_start"
+					class="border border-amber-50 w-25 py-1 cursor-pointer"
+				>
+					start ▶️
+				</button>
+				<button
+					id="test1_stop"
+					class="border border-amber-50 w-25 py-1 cursor-pointer"
+				>
+					stop ⏸️
+				</button>
+				<button
+					id="test1_restart"
+					class="border border-amber-50 w-25 py-1 cursor-pointer"
+				>
+					restart 🔄️
+				</button>
+			</div>
+		</section>
 	</body>
 </html>

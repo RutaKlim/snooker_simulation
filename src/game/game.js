@@ -194,3 +194,8 @@ const balls = [
 ];
 
 drawAllBallsAtStartingPos(balls, table);
+
+// section which just draws out the table to show
+const tableDrawing = document
+	.getElementById("table_drawing")
+drawAllBallsAtStartingPos(balls, tableDrawing);

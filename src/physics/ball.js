@@ -1,4 +1,5 @@
 export class Ball {
+	_radius = 6;
 	constructor(
 		colour,
 		isRed,
@@ -17,12 +18,20 @@ export class Ball {
 		this.curPos = curPos;
 	}
 
+	get radius() {
+		return this._radius;
+	}
+
 	get colour() {
 		return this._colour;
 	}
 
-	get startingPos() {
-		return [this._startingPosX, this._startingPosY];
+	get startX() {
+		return this._startingPosX;
+	}
+
+	get startY() {
+		return this._startingPosY;
 	}
 }
 
