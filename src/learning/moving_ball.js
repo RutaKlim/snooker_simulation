@@ -13,6 +13,10 @@ function drawRect() {
 }
 drawRect();
 
+function clearAll() {
+	c.clearRect(0, 0, width, height);
+}
+
 // ball
 // c.fillStyle = "red";
 // c.beginPath();
@@ -37,10 +41,10 @@ class TestBall {
 		return this._radius;
 	}
 	get startX() {
-		return this._startingPosX;
+		return this._startX;
 	}
 	get startY() {
-		return this._startingPosY;
+		return this._startY;
 	}
 	get curX() {
 		return this._curX;
@@ -83,12 +87,12 @@ function init() {
 	window.requestAnimationFrame(draw);
 }
 
-const velocity = 5;
+const velocity = 1;
 
 // USING THIS LINK --> https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Advanced_animations
 let raf;
 function draw() {
-	c.clearRect(0, 0, width, height); // clears rect
+	clearAll();
 	drawRect();
 	b1.drawBall();
 
@@ -108,10 +112,12 @@ stopBtn1.addEventListener("click", function () {
 });
 
 restartBtn1.addEventListener("click", function () {
-	// window.cancelAnimationFrame(raf);
-	// b1.curX = b1.startX;
-	// b1.curY = b1.startY;
-	// b1.drawBall();
+	window.cancelAnimationFrame(raf); // this pauses ball from keeping on moving
+	clearAll();
+	drawRect();
+	b1.curX = b1.startX;
+	b1.curY = b1.startY;
+	b1.drawBall();
 	// TODO FIX THIS
 });
 
