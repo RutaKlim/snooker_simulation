@@ -1,11 +1,11 @@
 export function drawAllBallsAtStartingPos(balls, table) {
+	const c = table.getContext("2d");
 	balls.forEach((ball) => {
-		drawBallAtStartingPos(ball, table);
+		drawBallAtStartingPos(ball, c);
 	});
 }
 
-export function drawBallAtStartingPos(ball, table) {
-	const c = table.getContext("2d");
+export function drawBallAtStartingPos(ball, c) {
 	drawBallSpec(ball.colour, ball.startX, ball.startY, c);
 }
 

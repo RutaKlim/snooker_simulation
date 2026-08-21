@@ -7,8 +7,11 @@ const width = canvas.width;
 const height = canvas.height;
 
 // temp
-c.strokeStyle = "wheat";
-c.strokeRect(0, 0, width, height);
+function drawRect() {
+	c.strokeStyle = "wheat";
+	c.strokeRect(0, 0, width, height);
+}
+drawRect();
 
 // ball
 // c.fillStyle = "red";
@@ -46,6 +49,13 @@ class TestBall {
 		return this._curY;
 	}
 
+	set curX(curX) {
+		this._curX = curX;
+	}
+	set curY(curY) {
+		this._curY = curY;
+	}
+
 	drawBall() {
 		c.fillStyle = this._colour;
 		c.beginPath();
@@ -73,18 +83,36 @@ function init() {
 	window.requestAnimationFrame(draw);
 }
 
-const speed = 20;
+const velocity = 5;
 
+// USING THIS LINK --> https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Advanced_animations
+let raf;
 function draw() {
 	c.clearRect(0, 0, width, height); // clears rect
-	b1.draw();
-	// TODO
-	// CARRY ON HERE BY ADDING HOW THE BALL MOVES
-	// USING THIS LINK --> https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Advanced_animations
-	b1.window.requestAnimationFrame(draw);
+	drawRect();
+	b1.drawBall();
+
+	// update
+	b1.curX += velocity;
+
+	raf = window.requestAnimationFrame(draw);
 }
 
 startBtn1.addEventListener("click", function () {
 	// move ball to the other side
-	window.requestAnimationFrame(draw);
+	raf = window.requestAnimationFrame(draw);
 });
+
+stopBtn1.addEventListener("click", function () {
+	window.cancelAnimationFrame(raf);
+});
+
+restartBtn1.addEventListener("click", function () {
+	// window.cancelAnimationFrame(raf);
+	// b1.curX = b1.startX;
+	// b1.curY = b1.startY;
+	// b1.drawBall();
+	// TODO FIX THIS
+});
+
+b1.drawBall();
