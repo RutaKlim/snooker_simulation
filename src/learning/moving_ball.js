@@ -83,11 +83,12 @@ const startBtn1 = document.getElementById("test1_start");
 const stopBtn1 = document.getElementById("test1_stop");
 const restartBtn1 = document.getElementById("test1_restart");
 
-function init() {
-	window.requestAnimationFrame(draw);
-}
+// Acceleration input (default = 0);
+let acceleration = Number(
+	document.getElementById("moving_ball_acceleration").value,
+);
 
-const velocity = 1;
+let velocity = Number(document.getElementById("moving_ball_velocity").value);
 
 // USING THIS LINK --> https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Advanced_animations
 let raf;
@@ -97,13 +98,32 @@ function draw() {
 	b1.drawBall();
 
 	// update
-	b1.curX += velocity;
+	// b1.curX += velocity ** acceleration;
+	b1.curX += velocity + Math.sqrt(2 * acceleration * (b1.curX - b1.startX));
+
+	// make it go to start when it reaches end
+	if (b1.curX > (width * 7) / 8) {
+		b1.curX = b1.startX;
+	}
 
 	raf = window.requestAnimationFrame(draw);
 }
 
+function restart() {
+	window.cancelAnimationFrame(raf); // this pauses ball from keeping on moving
+	clearAll();
+	drawRect();
+	b1.curX = b1.startX;
+	b1.drawBall();
+}
+
 startBtn1.addEventListener("click", function () {
 	// move ball to the other side
+	restart();
+	velocity = Number(document.getElementById("moving_ball_velocity").value);
+	acceleration = Number(
+		document.getElementById("moving_ball_acceleration").value,
+	);
 	raf = window.requestAnimationFrame(draw);
 });
 
@@ -112,13 +132,7 @@ stopBtn1.addEventListener("click", function () {
 });
 
 restartBtn1.addEventListener("click", function () {
-	window.cancelAnimationFrame(raf); // this pauses ball from keeping on moving
-	clearAll();
-	drawRect();
-	b1.curX = b1.startX;
-	b1.curY = b1.startY;
-	b1.drawBall();
-	// TODO FIX THIS
+	restart();
 });
 
 b1.drawBall();
