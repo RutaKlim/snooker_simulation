@@ -131,7 +131,7 @@
 			<p class="mb-6 text-lg">
 				I will now implement a ball bouncing off walls.
 			</p>
-			<div class="flex justify-evenly gap-5">
+			<div class="*:mb-3">
 				<div class="flex items-center gap-2">
 					<div>Initial velocity:</div>
 					<input
@@ -152,6 +152,24 @@
 					<p class="text-sm mt-2 text-gray-300">
 						(To apply the acceleration, press 'start' again)
 					</p>
+				</div>
+				<div class="flex items-center gap-2">
+					<div>Angle:</div>
+					<input
+						type="number"
+						id="test2_angle_numerator"
+						value="7"
+						class="border w-20 pl-3 pr-2 h-10 rounded-sm"
+					/>
+					/
+					<input
+						type="number"
+						id="test2_angle_denominator"
+						value="4"
+						class="border w-20 pl-3 pr-2 h-10 rounded-sm"
+					/>
+					* π (make a valid fraction is given, between the range: 0 - 2 (aka 2
+					rad))
 				</div>
 			</div>
 			<!-- start - canvas -->

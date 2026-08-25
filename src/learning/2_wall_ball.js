@@ -53,9 +53,15 @@ let acceleration = Number(document.getElementById("test2_acceleration").value);
 // default = ??
 let velocity = Number(document.getElementById("test2_velocity").value);
 
+// Angle
+let angle_n = Number(document.getElementById("test2_angle_numerator").value);
+let angle_d = Number(document.getElementById("test2_angle_denominator").value);
+let direction = (Math.PI * angle_n) / angle_d;
+if (angle_n == 0 || angle_d == 0) direction = 0;
+
 // direction the ball is hit
 // using radians
-let direction = (Math.PI * 7) / 4;
+// let direction = (Math.PI * 3) / 4;
 
 // Ball 1 direction
 let b1Xdir = 1;
@@ -82,12 +88,14 @@ function draw() {
 	ball2.drawBall(c2);
 
 	// Implement bouncing off walls
+	// Ball 1
 	if (ball1.curX < 0 + ball1.radius || ball1.curX > width - ball1.radius) {
 		b1Xdir = -b1Xdir;
 	}
 	if (ball1.curY < 0 + ball1.radius || ball1.curY > height - ball1.radius) {
 		b1Ydir = -b1Ydir;
 	}
+	// Ball 2
 	if (ball2.curX < 0 + ball2.radius || ball2.curX > width - ball2.radius) {
 		b2Xdir = -b2Xdir;
 	}
@@ -95,8 +103,8 @@ function draw() {
 		b2Ydir = -b2Ydir;
 	}
 
-	ball1.curX += b1Xdir * velocity;
-	ball1.curY += b1Ydir * velocity;
+	ball1.curX += b1Xdir * velocity * Math.cos(direction);
+	ball1.curY += b1Ydir * velocity * -Math.sin(direction);
 
 	// ACCELERATION - ONLY FOR BALL 2
 	// Implement bouncing off walls
@@ -110,7 +118,8 @@ function draw() {
 					2 *
 						acceleration *
 						Math.max(ball2.curX - ball2.startX, ball2.startX - ball2.curX),
-				)); // TODO MAKE THIS A MATH.MAX
+				)) *
+			Math.cos(direction);
 		ball2.curY +=
 			b2Ydir *
 			(velocity +
@@ -118,7 +127,8 @@ function draw() {
 					2 *
 						acceleration *
 						Math.max(ball2.curY - ball2.startY, ball2.startY - ball2.curY),
-				));
+				)) *
+			-Math.sin(direction);
 	} else {
 		ball2.curX +=
 			b2Xdir *
@@ -127,10 +137,12 @@ function draw() {
 					2 *
 						-acceleration *
 						Math.max(ball2.curX - ball2.startX, ball2.startX - ball2.curX),
-				));
+				)) *
+			Math.cos(direction);
 		ball2.curY +=
 			b2Ydir *
-			(velocity - Math.sqrt(2 * -acceleration * (ball2.curY - ball2.startY)));
+			(velocity - Math.sqrt(2 * -acceleration * (ball2.curY - ball2.startY))) *
+			-Math.sin(direction);
 		if (
 			velocity -
 				Math.sqrt(
@@ -177,6 +189,13 @@ startBtn.addEventListener("click", function () {
 		resetAllDir();
 		velocity = Number(document.getElementById("test2_velocity").value);
 		acceleration = Number(document.getElementById("test2_acceleration").value);
+
+		// find direction
+		angle_n = Number(document.getElementById("test2_angle_numerator").value);
+		angle_d = Number(document.getElementById("test2_angle_denominator").value);
+		direction = (Math.PI * angle_n) / angle_d;
+		if (angle_n == 0 || angle_d == 0) direction = 0;
+
 		raf = window.requestAnimationFrame(draw);
 	}
 });
