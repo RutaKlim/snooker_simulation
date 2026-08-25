@@ -13,7 +13,7 @@ const height = table.height;
 // coloured balls
 // ------------------------------------
 const yellowBall = new Ball(
-	"yellow",
+	"orange",
 	false,
 	2,
 	true,
@@ -21,11 +21,18 @@ const yellowBall = new Ball(
 	(height * 2) / 3,
 );
 
-const brownBall = new Ball("brown", false, 3, true, width / 5, height / 2);
+const brownBall = new Ball(
+	"saddlebrown",
+	false,
+	3,
+	true,
+	width / 5,
+	height / 2,
+);
 
 const greenBall = new Ball("darkgreen", false, 3, true, width / 5, height / 3);
 
-const blueBall = new Ball("blue", false, 5, true, width / 2, height / 2);
+const blueBall = new Ball("DodgerBlue", false, 5, true, width / 2, height / 2);
 
 const pinkBall = new Ball(
 	"hotpink",
@@ -48,7 +55,7 @@ const blackBall = new Ball(
 // red balls
 //-----------------------------------
 const redBall1 = new Ball(
-	"red",
+	"#d91002",
 	true,
 	1,
 	true,
@@ -56,7 +63,7 @@ const redBall1 = new Ball(
 	height / 2,
 );
 const redBall2 = new Ball(
-	"red",
+	"#d91002",
 	true,
 	1,
 	true,
@@ -64,7 +71,7 @@ const redBall2 = new Ball(
 	height / 2 - 6,
 );
 const redBall3 = new Ball(
-	"red",
+	"#d91002",
 	true,
 	1,
 	true,
@@ -72,7 +79,7 @@ const redBall3 = new Ball(
 	height / 2 + 6,
 );
 const redBall4 = new Ball(
-	"red",
+	"#d91002",
 	true,
 	1,
 	true,
@@ -80,7 +87,7 @@ const redBall4 = new Ball(
 	height / 2,
 );
 const redBall5 = new Ball(
-	"red",
+	"#d91002",
 	true,
 	1,
 	true,
@@ -88,7 +95,7 @@ const redBall5 = new Ball(
 	height / 2 - 12,
 );
 const redBall6 = new Ball(
-	"red",
+	"#d91002",
 	true,
 	1,
 	true,
@@ -96,7 +103,7 @@ const redBall6 = new Ball(
 	height / 2 + 12,
 );
 const redBall7 = new Ball(
-	"red",
+	"#d91002",
 	true,
 	1,
 	true,
@@ -104,7 +111,7 @@ const redBall7 = new Ball(
 	height / 2 - 6,
 );
 const redBall8 = new Ball(
-	"red",
+	"#d91002",
 	true,
 	1,
 	true,
@@ -113,7 +120,7 @@ const redBall8 = new Ball(
 );
 
 const redBall9 = new Ball(
-	"red",
+	"#d91002",
 	true,
 	1,
 	true,
@@ -121,7 +128,7 @@ const redBall9 = new Ball(
 	height / 2 - 18,
 );
 const redBall10 = new Ball(
-	"red",
+	"#d91002",
 	true,
 	1,
 	true,
@@ -129,7 +136,7 @@ const redBall10 = new Ball(
 	height / 2 + 18,
 );
 const redBall11 = new Ball(
-	"red",
+	"#d91002",
 	true,
 	1,
 	true,
@@ -137,7 +144,7 @@ const redBall11 = new Ball(
 	height / 2,
 );
 const redBall12 = new Ball(
-	"red",
+	"#d91002",
 	true,
 	1,
 	true,
@@ -145,7 +152,7 @@ const redBall12 = new Ball(
 	height / 2 - 12,
 );
 const redBall13 = new Ball(
-	"red",
+	"#d91002",
 	true,
 	1,
 	true,
@@ -153,7 +160,7 @@ const redBall13 = new Ball(
 	height / 2 + 12,
 );
 const redBall14 = new Ball(
-	"red",
+	"#d91002",
 	true,
 	1,
 	true,
@@ -161,7 +168,7 @@ const redBall14 = new Ball(
 	height / 2 - 24,
 );
 const redBall15 = new Ball(
-	"red",
+	"#d91002",
 	true,
 	1,
 	true,
@@ -196,6 +203,5 @@ const balls = [
 drawAllBallsAtStartingPos(balls, table);
 
 // section which just draws out the table to show
-const tableDrawing = document
-	.getElementById("table_drawing")
+const tableDrawing = document.getElementById("table_drawing");
 drawAllBallsAtStartingPos(balls, tableDrawing);

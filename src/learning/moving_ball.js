@@ -97,12 +97,23 @@ function draw() {
 	drawRect();
 	b1.drawBall();
 
+	// if decelerating is so small then end animation and make it stationary
 	// update
 	// b1.curX += velocity ** acceleration;
-	b1.curX += velocity + Math.sqrt(2 * acceleration * (b1.curX - b1.startX));
+	if (acceleration >= 0) {
+		b1.curX += velocity + Math.sqrt(2 * acceleration * (b1.curX - b1.startX));
+	} else {
+		b1.curX += velocity - Math.sqrt(2 * -acceleration * (b1.curX - b1.startX));
+		if (
+			velocity - Math.sqrt(2 * -acceleration * (b1.curX - b1.startX)) <
+			0.01
+		) {
+			return;
+		}
+	}
 
-	// make it go to start when it reaches end
 	if (b1.curX > (width * 7) / 8) {
+		// make it go to start when it reaches end
 		b1.curX = b1.startX;
 	}
 
@@ -119,7 +130,6 @@ function restart() {
 
 startBtn1.addEventListener("click", function () {
 	// move ball to the other side
-	restart();
 	velocity = Number(document.getElementById("moving_ball_velocity").value);
 	acceleration = Number(
 		document.getElementById("moving_ball_acceleration").value,
