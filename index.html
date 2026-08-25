@@ -45,7 +45,7 @@
 			<p class="text-lg">
 				Throughout this, I will show the steps in order of what I implement,
 				such as firstly making a ball move, accelerate, decelerate due to
-				friction, collide with another ball, cushion shots and etc.
+				friction, cushion shots, collide with other balls etc.
 			</p>
 		</section>
 		<!-- end - INTRO -->
@@ -69,10 +69,11 @@
 		<section class="mx-5 mt-8 pb-7">
 			<div class="text-4xl font-medium">#2 Moving a ball</div>
 			<div class="w-full h-0.5 bg-gray-800 mt-2 mb-5"></div>
-			<p class="mb-3 text-lg">
+			<p class="mb-6 text-lg">
 				I will move a simple ball modelled with constant acceleration. If
 				acceleration value is negative then the ball decelerates, which in this
-				project will primarily be friction from the table.
+				project will primarily be friction from the table. The initial velocity
+				will be determined by the 'cue power'.
 			</p>
 			<div class="flex justify-evenly gap-5">
 				<div class="flex items-center gap-2">
@@ -93,7 +94,7 @@
 						class="border w-20 pl-3 pr-2 h-10 rounded-sm"
 					/>
 					<p class="text-sm mt-2 text-gray-300">
-						<--- To apply the acceleration, press 'start' again.
+						(To apply the acceleration, press 'start' again)
 					</p>
 				</div>
 			</div>
@@ -117,6 +118,69 @@
 				</button>
 				<button
 					id="test1_restart"
+					class="border border-amber-50 w-25 py-1 cursor-pointer rounded-sm"
+				>
+					restart 🔄️
+				</button>
+			</div>
+		</section>
+		<!-- section #3 - bouncing of walls -->
+		<section class="mx-5 mt-8 pb-7">
+			<div class="text-4xl font-medium">#3 Bouncing off walls</div>
+			<div class="w-full h-0.5 bg-gray-800 mt-2 mb-5"></div>
+			<p class="mb-6 text-lg">
+				I will now implement a ball bouncing off walls.
+			</p>
+			<div class="flex justify-evenly gap-5">
+				<div class="flex items-center gap-2">
+					<div>Initial velocity:</div>
+					<input
+						type="number"
+						id="test2_velocity"
+						value="3"
+						class="border w-20 pl-3 pr-2 h-10 rounded-sm"
+					/>
+				</div>
+				<div class="flex items-center gap-2">
+					<div>Acceleration:</div>
+					<input
+						type="number"
+						id="test2_acceleration"
+						value="0.05"
+						class="border w-20 pl-3 pr-2 h-10 rounded-sm"
+					/>
+					<p class="text-sm mt-2 text-gray-300">
+						(To apply the acceleration, press 'start' again)
+					</p>
+				</div>
+			</div>
+			<!-- start - canvas -->
+			<div class="flex justify-center items-center w-full mt-6 mb-5 gap-5">
+				<div>
+					<div class="mb-1">No acceleration</div>
+					<canvas id="moving_ball_2" width="300" height="200"></canvas>
+				</div>
+				<div>
+					<div class="mb-1">Using given constant acceleration</div>
+					<canvas id="moving_ball_2.0" width="300" height="200"></canvas>
+				</div>
+			</div>
+			<!-- end - canvas -->
+			<div class="flex justify-center gap-6 mt-2">
+				<button
+					id="test2_start"
+					class="border border-amber-50 w-25 py-1 cursor-pointer rounded-sm"
+				>
+					start ▶️
+				</button>
+				<button
+					id="test2_stop"
+					class="border border-amber-50 w-25 py-1 cursor-pointer rounded-sm"
+				>
+					stop ⏸️
+				</button>
+				<button
+					id="test2_restart"
 					class="border border-amber-50 w-25 py-1 cursor-pointer rounded-sm"
 				>
 					restart 🔄️

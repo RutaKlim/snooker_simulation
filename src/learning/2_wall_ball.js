@@ -1,0 +1,195 @@
+import { TestBall } from "./1_moving_ball";
+
+// Left canvas
+const canvas = document.getElementById("moving_ball_2");
+const c1 = canvas.getContext("2d");
+
+// Right Canvas
+const canvas1 = document.getElementById("moving_ball_2.0");
+const c2 = canvas1.getContext("2d");
+
+// Buttons
+const startBtn = document.getElementById("test2_start");
+const stopBtn = document.getElementById("test2_stop");
+const restartBtn = document.getElementById("test2_restart");
+
+const width = canvas.width;
+const height = canvas.height;
+
+function clearAll(c) {
+	c.clearRect(0, 0, width, height);
+}
+
+function drawRect(c) {
+	c.strokeStyle = "wheat";
+	c.strokeRect(0, 0, width, height);
+}
+drawRect(c1);
+drawRect(c2);
+
+const ball1 = new TestBall(
+	"white",
+	10,
+	width / 3,
+	height / 3,
+	width / 3,
+	height / 3,
+);
+const ball2 = new TestBall(
+	"white",
+	10,
+	width / 3,
+	height / 3,
+	width / 3,
+	height / 3,
+);
+
+ball1.drawBall(c1);
+ball2.drawBall(c2);
+
+// Acceleration input (default = ??);
+let acceleration = Number(document.getElementById("test2_acceleration").value);
+
+// default = ??
+let velocity = Number(document.getElementById("test2_velocity").value);
+
+// direction the ball is hit
+// using radians
+let direction = (Math.PI * 7) / 4;
+
+// Ball 1 direction
+let b1Xdir = 1;
+let b1Ydir = 1;
+// Ball 2 direction
+let b2Xdir = 1;
+let b2Ydir = 1;
+
+function resetAllDir() {
+	b1Xdir = 1;
+	b1Ydir = 1;
+	b2Xdir = 1;
+	b2Ydir = 1;
+}
+
+let raf;
+// will animate both balls simultaneously
+function draw() {
+	clearAll(c1);
+	clearAll(c2);
+	drawRect(c1);
+	drawRect(c2);
+	ball1.drawBall(c1);
+	ball2.drawBall(c2);
+
+	// Implement bouncing off walls
+	if (ball1.curX < 0 + ball1.radius || ball1.curX > width - ball1.radius) {
+		b1Xdir = -b1Xdir;
+	}
+	if (ball1.curY < 0 + ball1.radius || ball1.curY > height - ball1.radius) {
+		b1Ydir = -b1Ydir;
+	}
+	if (ball2.curX < 0 + ball2.radius || ball2.curX > width - ball2.radius) {
+		b2Xdir = -b2Xdir;
+	}
+	if (ball2.curY < 0 + ball2.radius || ball2.curY > height - ball2.radius) {
+		b2Ydir = -b2Ydir;
+	}
+
+	ball1.curX += b1Xdir * velocity;
+	ball1.curY += b1Ydir * velocity;
+
+	// ACCELERATION - ONLY FOR BALL 2
+	// Implement bouncing off walls
+
+	// if decelerating is so small then end animation and make it stationary
+	if (acceleration >= 0) {
+		ball2.curX +=
+			b2Xdir *
+			(velocity +
+				Math.sqrt(
+					2 *
+						acceleration *
+						Math.max(ball2.curX - ball2.startX, ball2.startX - ball2.curX),
+				)); // TODO MAKE THIS A MATH.MAX
+		ball2.curY +=
+			b2Ydir *
+			(velocity +
+				Math.sqrt(
+					2 *
+						acceleration *
+						Math.max(ball2.curY - ball2.startY, ball2.startY - ball2.curY),
+				));
+	} else {
+		ball2.curX +=
+			b2Xdir *
+			(velocity -
+				Math.sqrt(
+					2 *
+						-acceleration *
+						Math.max(ball2.curX - ball2.startX, ball2.startX - ball2.curX),
+				));
+		ball2.curY +=
+			b2Ydir *
+			(velocity - Math.sqrt(2 * -acceleration * (ball2.curY - ball2.startY)));
+		if (
+			velocity -
+				Math.sqrt(
+					2 *
+						-acceleration *
+						Math.max(ball2.curX - ball2.startX, ball2.startX - ball2.curX),
+				) <
+				0.01 &&
+			velocity -
+				Math.sqrt(
+					2 *
+						-acceleration *
+						Math.max(ball2.curY - ball2.startY, ball2.startY - ball2.curY),
+				) <
+				0.01
+		) {
+			return;
+		}
+	}
+
+	raf = window.requestAnimationFrame(draw);
+}
+
+function restart() {
+	window.cancelAnimationFrame(raf); // this pauses ball from keeping on moving
+	clearAll(c1);
+	clearAll(c2);
+	drawRect(c1);
+	drawRect(c2);
+	// ball back to starting position
+	ball1.curX = ball1.startX;
+	ball1.curY = ball1.startY;
+	ball2.curX = ball2.startX;
+	ball2.curY = ball2.startY;
+	// reset direction
+	resetAllDir();
+	ball1.drawBall(c1);
+	ball2.drawBall(c2);
+}
+
+startBtn.addEventListener("click", function () {
+	if (!raf) {
+		// move ball to the other side
+		resetAllDir();
+		velocity = Number(document.getElementById("test2_velocity").value);
+		acceleration = Number(document.getElementById("test2_acceleration").value);
+		raf = window.requestAnimationFrame(draw);
+	}
+});
+
+stopBtn.addEventListener("click", function () {
+	window.cancelAnimationFrame(raf);
+	raf = undefined;
+});
+
+restartBtn.addEventListener("click", function () {
+	restart();
+	raf = undefined;
+});
+
+ball1.drawBall(c1);
+ball2.drawBall(c2);

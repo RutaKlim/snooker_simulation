@@ -24,7 +24,7 @@ function clearAll() {
 // c.fill();
 
 // can draw out but i will use the ball object
-class TestBall {
+export class TestBall {
 	constructor(colour, radius, startX, startY, curX, curY) {
 		this._colour = colour;
 		this._radius = radius;
@@ -60,7 +60,7 @@ class TestBall {
 		this._curY = curY;
 	}
 
-	drawBall() {
+	drawBall(c) {
 		c.fillStyle = this._colour;
 		c.beginPath();
 		c.arc(this._curX, this._curY, this._radius, 0, Math.PI * 2, true);
@@ -76,18 +76,19 @@ const b1 = new TestBall(
 	height / 2,
 );
 
-b1.drawBall();
+b1.drawBall(c);
 
 // physics to make the ball move
 const startBtn1 = document.getElementById("test1_start");
 const stopBtn1 = document.getElementById("test1_stop");
 const restartBtn1 = document.getElementById("test1_restart");
 
-// Acceleration input (default = 0);
+// Acceleration input (default = 0.05);
 let acceleration = Number(
 	document.getElementById("moving_ball_acceleration").value,
 );
 
+// default = 1
 let velocity = Number(document.getElementById("moving_ball_velocity").value);
 
 // USING THIS LINK --> https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Advanced_animations
@@ -95,7 +96,7 @@ let raf;
 function draw() {
 	clearAll();
 	drawRect();
-	b1.drawBall();
+	b1.drawBall(c);
 
 	// if decelerating is so small then end animation and make it stationary
 	// update
@@ -125,24 +126,28 @@ function restart() {
 	clearAll();
 	drawRect();
 	b1.curX = b1.startX;
-	b1.drawBall();
+	b1.drawBall(c);
 }
 
 startBtn1.addEventListener("click", function () {
 	// move ball to the other side
-	velocity = Number(document.getElementById("moving_ball_velocity").value);
-	acceleration = Number(
-		document.getElementById("moving_ball_acceleration").value,
-	);
-	raf = window.requestAnimationFrame(draw);
+	if (!raf) {
+		velocity = Number(document.getElementById("moving_ball_velocity").value);
+		acceleration = Number(
+			document.getElementById("moving_ball_acceleration").value,
+		);
+		raf = window.requestAnimationFrame(draw);
+	}
 });
 
 stopBtn1.addEventListener("click", function () {
 	window.cancelAnimationFrame(raf);
+	raf = undefined;
 });
 
 restartBtn1.addEventListener("click", function () {
 	restart();
+	raf = undefined;
 });
 
-b1.drawBall();
+b1.drawBall(c);
