@@ -27,22 +27,8 @@ function drawRect(c) {
 drawRect(c1);
 drawRect(c2);
 
-const ball1 = new TestBall(
-	"white",
-	10,
-	width / 3,
-	height / 3,
-	width / 3,
-	height / 3,
-);
-const ball2 = new TestBall(
-	"white",
-	10,
-	width / 3,
-	height / 3,
-	width / 3,
-	height / 3,
-);
+const ball1 = new TestBall("white", 10, width / 3, height / 3);
+const ball2 = new TestBall("white", 10, width / 3, height / 3);
 
 ball1.drawBall(c1);
 ball2.drawBall(c2);
@@ -54,14 +40,22 @@ let acceleration = Number(document.getElementById("test2_acceleration").value);
 let speed = Number(document.getElementById("test2_speed").value);
 
 // Angle
-let angle_n = Number(document.getElementById("test2_angle_numerator").value);
-let angle_d = Number(document.getElementById("test2_angle_denominator").value);
-let direction = (Math.PI * angle_n) / angle_d;
-if (angle_n == 0 || angle_d == 0) direction = 0;
+let angle_n;
+let angle_d;
+let direction;
+function calcDirection() {
+	angle_n = Number(document.getElementById("test2_angle_numerator").value);
+	angle_d = Number(document.getElementById("test2_angle_denominator").value);
+	if (angle_n == 0 || angle_d == 0) {
+		direction = 0;
+	} else {
+		direction = (Math.PI * angle_n) / angle_d;
+	}
+}
+calcDirection();
 
 // direction the ball is hit
 // using radians
-// let direction = (Math.PI * 3) / 4;
 
 // Ball 1 direction
 let b1Xdir = 1;
@@ -170,10 +164,9 @@ startBtn.addEventListener("click", function () {
 		acceleration = Number(document.getElementById("test2_acceleration").value);
 
 		// find direction
-		angle_n = Number(document.getElementById("test2_angle_numerator").value);
-		angle_d = Number(document.getElementById("test2_angle_denominator").value);
-		direction = (Math.PI * angle_n) / angle_d;
-		if (angle_n == 0 || angle_d == 0) direction = 0;
+		calcDirection();
+
+		ball2IsMoving = true;
 
 		raf = window.requestAnimationFrame(draw);
 	}

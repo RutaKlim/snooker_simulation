@@ -3,6 +3,7 @@ import "./style.css";
 
 import "./learning/1_moving_ball.js";
 import "./learning/2_wall_ball.js";
+import "./learning/3_collision_ball.js";
 
 import "./render/drawTable.js";
 import "./render/drawBall.js";

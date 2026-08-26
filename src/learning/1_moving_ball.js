@@ -25,13 +25,13 @@ function clearAll() {
 
 // can draw out but i will use the ball object
 export class TestBall {
-	constructor(colour, radius, startX, startY, curX, curY) {
+	constructor(colour, radius, startX, startY) {
 		this._colour = colour;
 		this._radius = radius;
 		this._startX = startX;
 		this._startY = startY;
-		this._curX = curX;
-		this._curY = curY;
+		this._curX = startX;
+		this._curY = startY;
 	}
 
 	get colour() {
@@ -67,14 +67,7 @@ export class TestBall {
 		c.fill();
 	}
 }
-const b1 = new TestBall(
-	"white",
-	15,
-	width / 8,
-	height / 2,
-	width / 8,
-	height / 2,
-);
+const b1 = new TestBall("white", 15, width / 8, height / 2);
 
 b1.drawBall(c);
 
