@@ -89,20 +89,38 @@ function draw() {
 
 	// Implement bouncing off walls
 	// Ball 1
-	if (ball1.curX < 0 + ball1.radius || ball1.curX > width - ball1.radius) {
-		b1Xdir = -b1Xdir;
+	if (ball1.curX < ball1.radius) {
+		ball1.curX = ball1.radius;
+		b1Xdir = Math.abs(b1Xdir);
+	} else if (ball1.curX > width - ball1.radius) {
+		ball1.curX = width - ball1.radius;
+		b1Xdir = -Math.abs(b1Xdir);
 	}
-	if (ball1.curY < 0 + ball1.radius || ball1.curY > height - ball1.radius) {
-		b1Ydir = -b1Ydir;
+	if (ball1.curY < ball1.radius) {
+		ball1.curY = ball1.radius;
+		b1Ydir = Math.abs(b1Ydir);
+	} else if (ball1.curY > height - ball1.radius) {
+		ball1.curY = height - ball1.radius;
+		b1Ydir = -Math.abs(b1Ydir);
 	}
 	// Ball 2
-	if (ball2.curX < 0 + ball2.radius || ball2.curX > width - ball2.radius) {
-		b2Xdir = -b2Xdir;
-	}
-	if (ball2.curY < 0 + ball2.radius || ball2.curY > height - ball2.radius) {
-		b2Ydir = -b2Ydir;
+	if (ball2.curX < ball2.radius) {
+		ball2.curX = ball2.radius;
+		b2Xdir = Math.abs(b2Xdir);
+	} else if (ball2.curX > width - ball2.radius) {
+		ball2.curX = width - ball2.radius;
+		b2Xdir = -Math.abs(b2Xdir);
 	}
 
+	if (ball2.curY < ball2.radius) {
+		ball2.curY = ball2.radius;
+		b2Ydir = Math.abs(b2Ydir);
+	} else if (ball2.curY > height - ball2.radius) {
+		ball2.curY = height - ball2.radius;
+		b2Ydir = -Math.abs(b2Ydir);
+	}
+
+	// Ball 1
 	ball1.curX += b1Xdir * velocity * Math.cos(direction);
 	ball1.curY += b1Ydir * velocity * -Math.sin(direction);
 
@@ -141,7 +159,12 @@ function draw() {
 			Math.cos(direction);
 		ball2.curY +=
 			b2Ydir *
-			(velocity - Math.sqrt(2 * -acceleration * (ball2.curY - ball2.startY))) *
+			(velocity -
+				Math.sqrt(
+					2 *
+						-acceleration *
+						Math.max(ball2.curY - ball2.startY, ball2.startY - ball2.curY),
+				)) *
 			-Math.sin(direction);
 		if (
 			velocity -
