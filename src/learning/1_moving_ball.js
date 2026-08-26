@@ -89,7 +89,7 @@ let acceleration = Number(
 );
 
 // default = 1
-let velocity = Number(document.getElementById("moving_ball_velocity").value);
+let speed = Number(document.getElementById("moving_ball_speed").value);
 
 // USING THIS LINK --> https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Advanced_animations
 let raf;
@@ -100,15 +100,12 @@ function draw() {
 
 	// if decelerating is so small then end animation and make it stationary
 	// update
-	// b1.curX += velocity ** acceleration;
+	// b1.curX += speed ** acceleration;
 	if (acceleration >= 0) {
-		b1.curX += velocity + Math.sqrt(2 * acceleration * (b1.curX - b1.startX));
+		b1.curX += speed + Math.sqrt(2 * acceleration * (b1.curX - b1.startX));
 	} else {
-		b1.curX += velocity - Math.sqrt(2 * -acceleration * (b1.curX - b1.startX));
-		if (
-			velocity - Math.sqrt(2 * -acceleration * (b1.curX - b1.startX)) <
-			0.01
-		) {
+		b1.curX += speed - Math.sqrt(2 * -acceleration * (b1.curX - b1.startX));
+		if (speed - Math.sqrt(2 * -acceleration * (b1.curX - b1.startX)) < 0.01) {
 			return;
 		}
 	}
@@ -132,7 +129,7 @@ function restart() {
 startBtn1.addEventListener("click", function () {
 	// move ball to the other side
 	if (!raf) {
-		velocity = Number(document.getElementById("moving_ball_velocity").value);
+		speed = Number(document.getElementById("moving_ball_speed").value);
 		acceleration = Number(
 			document.getElementById("moving_ball_acceleration").value,
 		);

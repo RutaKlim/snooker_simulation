@@ -7,7 +7,7 @@ DONE 3. add balls on table in starting positions
 4. review and record the maths for this using drawings from my ipad
 DONE 5. make a ball move, and using a button to play
 DONE 6. bounce off the walls
-7. fix/add deceleration to balls bouncing off walls
+DONE 7. fix/add deceleration to balls bouncing off walls
 8. balls bounce of eachother, specifically the cue ball hitting another ball, and the angle being correct.
 9. using the mouse from the user. be able to see a line, and when released, the ball moves
 

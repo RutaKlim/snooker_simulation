@@ -51,7 +51,7 @@ ball2.drawBall(c2);
 let acceleration = Number(document.getElementById("test2_acceleration").value);
 
 // default = ??
-let velocity = Number(document.getElementById("test2_velocity").value);
+let speed = Number(document.getElementById("test2_speed").value);
 
 // Angle
 let angle_n = Number(document.getElementById("test2_angle_numerator").value);
@@ -78,6 +78,8 @@ function resetAllDir() {
 }
 
 let raf;
+let distanceTravelled = 0;
+let ball2IsMoving = true;
 // will animate both balls simultaneously
 function draw() {
 	clearAll(c1);
@@ -121,69 +123,22 @@ function draw() {
 	}
 
 	// Ball 1
-	ball1.curX += b1Xdir * velocity * Math.cos(direction);
-	ball1.curY += b1Ydir * velocity * -Math.sin(direction);
+	ball1.curX += b1Xdir * speed * Math.cos(direction);
+	ball1.curY += b1Ydir * speed * -Math.sin(direction);
 
 	// ACCELERATION - ONLY FOR BALL 2
 	// Implement bouncing off walls
-
 	// if decelerating is so small then end animation and make it stationary
-	if (acceleration >= 0) {
-		ball2.curX +=
-			b2Xdir *
-			(velocity +
-				Math.sqrt(
-					2 *
-						acceleration *
-						Math.max(ball2.curX - ball2.startX, ball2.startX - ball2.curX),
-				)) *
-			Math.cos(direction);
-		ball2.curY +=
-			b2Ydir *
-			(velocity +
-				Math.sqrt(
-					2 *
-						acceleration *
-						Math.max(ball2.curY - ball2.startY, ball2.startY - ball2.curY),
-				)) *
-			-Math.sin(direction);
-	} else {
-		ball2.curX +=
-			b2Xdir *
-			(velocity -
-				Math.sqrt(
-					2 *
-						-acceleration *
-						Math.max(ball2.curX - ball2.startX, ball2.startX - ball2.curX),
-				)) *
-			Math.cos(direction);
-		ball2.curY +=
-			b2Ydir *
-			(velocity -
-				Math.sqrt(
-					2 *
-						-acceleration *
-						Math.max(ball2.curY - ball2.startY, ball2.startY - ball2.curY),
-				)) *
-			-Math.sin(direction);
-		if (
-			velocity -
-				Math.sqrt(
-					2 *
-						-acceleration *
-						Math.max(ball2.curX - ball2.startX, ball2.startX - ball2.curX),
-				) <
-				0.01 &&
-			velocity -
-				Math.sqrt(
-					2 *
-						-acceleration *
-						Math.max(ball2.curY - ball2.startY, ball2.startY - ball2.curY),
-				) <
-				0.01
-		) {
-			return;
-		}
+	if (ball2IsMoving) {
+		let currentSpeed = Math.sqrt(
+			Math.max(0, speed ** 2 + 2 * acceleration * distanceTravelled),
+		);
+
+		if (currentSpeed < 0.01) ball2IsMoving = false;
+
+		ball2.curX += b2Xdir * currentSpeed * Math.cos(direction);
+		ball2.curY += b2Ydir * currentSpeed * -Math.sin(direction);
+		distanceTravelled += currentSpeed;
 	}
 
 	raf = window.requestAnimationFrame(draw);
@@ -200,6 +155,7 @@ function restart() {
 	ball1.curY = ball1.startY;
 	ball2.curX = ball2.startX;
 	ball2.curY = ball2.startY;
+	distanceTravelled = 0;
 	// reset direction
 	resetAllDir();
 	ball1.drawBall(c1);
@@ -210,7 +166,7 @@ startBtn.addEventListener("click", function () {
 	if (!raf) {
 		// move ball to the other side
 		resetAllDir();
-		velocity = Number(document.getElementById("test2_velocity").value);
+		speed = Number(document.getElementById("test2_speed").value);
 		acceleration = Number(document.getElementById("test2_acceleration").value);
 
 		// find direction

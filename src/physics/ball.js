@@ -39,15 +39,20 @@ export class CueBall extends Ball {
 	constructor(
 		colour,
 		onTable,
-		startingPos,
-		curPos,
+		startX,
+		startY,
+		curX,
+		curY,
 		spinDirection,
 		spinPower,
 		shotPower,
 	) {
 		this.colour = colour;
 		this.onTable = onTable;
-		this.startingPos = startingPos;
+		this.startX = startX;
+		this.startY = startY;
+		this.curX = curX;
+		this.curY = curY;
 		this.curPos = curPos;
 		this.spinDirection = spinDirection;
 		this.spinPower = spinPower;
