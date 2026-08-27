@@ -22,7 +22,7 @@ function drawRect() {
 drawRect();
 
 // Cue ball
-const cueBall = new CueBall(true, width / 7, height / 2, "middle", 1, 1);
+const cueBall = new CueBall(true, width / 7, height / 2);
 cueBall.radius = 15;
 cueBall.drawBall(c);
 
@@ -32,31 +32,32 @@ redBall.radius = 15;
 redBall.drawBall(c);
 
 // Initial speed by the cue ball
-let speed = Number(document.getElementById("collision_ball_speed").value);
+cueBall.speed = Number(document.getElementById("collision_ball_speed").value);
+
+// deceleration is applied to all balls
 let deceleration = Number(
 	document.getElementById("collision_ball_deceleration").value,
 );
 
-// Angle
+// Angle - also for the cue ball
 let angle_n;
 let angle_d;
-let direction;
-function calcDirection() {
+function calcDirectionForCueBall() {
 	angle_n = Number(document.getElementById("test3_angle_numerator").value);
 	angle_d = Number(document.getElementById("test3_angle_denominator").value);
 	if (angle_n == 0 || angle_d == 0) {
-		direction = 0;
+		cueBall.direction = 0;
 	} else {
-		direction = (Math.PI * angle_n) / angle_d;
+		cueBall.direction = (Math.PI * angle_n) / angle_d;
 	}
 }
-calcDirection();
+calcDirectionForCueBall();
 
-// maybe create an array of balls that are on the table
+// array of ball objects that are on the table
 const ballsOnTable = [cueBall, redBall];
 
 let raf;
-let distanceTravelled = 0;
+// let distanceTravelled = 0;
 function draw() {
 	clearAll();
 	drawRect();
@@ -66,6 +67,7 @@ function draw() {
 	// deceleration from the table and air, instantly act against it.
 	// the angle given will be the angle at which the white cue ball is hit.
 	// check if the balls touch, then calculate the angle made, and the force at which it was hit
+
 	function wallDeflection() {
 		ballsOnTable.forEach((ball) => {
 			// X
@@ -90,31 +92,62 @@ function draw() {
 
 	// make balls move
 	ballsOnTable.forEach((ball) => {
-		if (ball.isMoving()) {
+		if (ball.isMoving) {
 			let currentSpeed = Math.sqrt(
-				Math.max(0, speed ** 2 + 2 * deceleration * distanceTravelled),
+				Math.max(
+					0,
+					ball.speed ** 2 + 2 * deceleration * ball.distanceTravelled,
+				),
 			);
 
 			if (currentSpeed < 0.01) ball.isMoving = false;
 
-			ball.curX += ball.dirX * currentSpeed * Math.cos(direction);
-			ball.curY += ball.dirY * currentSpeed * -Math.sin(direction);
+			ball.curX += ball.dirX * currentSpeed * Math.cos(ball.direction);
+			ball.curY += ball.dirY * currentSpeed * -Math.sin(ball.direction);
+			ball.distanceTravelled += currentSpeed;
 		}
 
 		// TODO
 		// CODE WHAT HAPPENS WHEN A BALL MAKES ANOTHER MOVE, AND EDIT THAT BALL SO THAT HOLDS THE VALUE THAT IT IS MOVING ETC.
+		// scan through the moving balls, and see what other balls they hit
+		ballsOnTable.forEach((ball) => {
+			ballsOnTable.forEach((otherBall) => {
+				if (
+					ball != otherBall &&
+					Math.hypot(ball.curX - otherBall.curX, ball.curY - otherBall.curY) <=
+						ball.radius + otherBall.radius
+				) {
+					// make 'otherBall' move due to 'ball'
+					otherBall.isMoving = true;
+					otherBall.speed = ball.speed;
+					// otherBall.direction = Math.atan(
+					// 	Math.abs(ball.curY - otherBall.curY / ball.curX - otherBall.curX),
+					// );
+					otherBall.direction = 0;
 
-		raf = window.requestAnimationFrame(draw);
+					// make ball change direction as well
+				}
+			});
+		});
+	});
+
+	// stop the animations when all balls all aren't moving
+	ballsOnTable.forEach((ball) => {
+		if (ball._isMoving == true) {
+			raf = window.requestAnimationFrame(draw);
+		}
 	});
 }
 
 strikeBtn.addEventListener("click", function () {
 	if (!raf) {
-		speed = Number(document.getElementById("collision_ball_speed").value);
+		cueBall.speed = Number(
+			document.getElementById("collision_ball_speed").value,
+		);
 		deceleration = Number(
 			document.getElementById("collision_ball_deceleration").value,
 		);
-		calcDirection();
+		calcDirectionForCueBall();
 		cueBall.isMoving = true;
 		raf = window.requestAnimationFrame(draw);
 	}
@@ -128,8 +161,11 @@ restartBtn.addEventListener("click", function () {
 	ballsOnTable.forEach((ball) => {
 		ball.curX = ball.startX;
 		ball.curY = ball.startY;
+		ball.distanceTravelled = 0;
+		ball.speed = 0;
+		ball.isMoving = false;
+		ball.direction = 0;
 	});
-	distanceTravelled = 0;
-	raf = undefined;
 	drawAllBalls(ballsOnTable, c);
+	raf = undefined;
 });
