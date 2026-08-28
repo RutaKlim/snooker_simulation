@@ -22,7 +22,7 @@ function drawRect() {
 drawRect();
 
 // Cue ball
-const cueBall = new CueBall(true, width / 7, height / 2);
+const cueBall = new CueBall(true, width / 7, height / 2 - 20);
 cueBall.radius = 15;
 cueBall.drawBall(c);
 
@@ -56,6 +56,28 @@ calcDirectionForCueBall();
 // array of ball objects that are on the table
 const ballsOnTable = [cueBall, redBall];
 
+function changeDirections(ball) {
+	console.log(ball);
+	let d = ball.direction;
+	console.log(ball.direction);
+	// console.log(2 * Math.PI);
+	if (0 <= d && d < Math.PI / 2) {
+		ball.dirX = 1;
+		ball.dirY = -1;
+	} else if (Math.PI / 2 <= d && d < Math.PI) {
+		ball.dirX = -1;
+		ball.dirY = -1;
+	} else if (Math.PI <= d && d < (Math.PI * 3) / 2) {
+		ball.dirX = -1;
+		ball.dirY = 1;
+	} else if ((Math.PI * 3) / 2 <= d && d < 2 * Math.PI) {
+		ball.dirX = 1;
+		ball.dirY = 1;
+	}
+	console.log("X: " + ball.dirX);
+	console.log("y: " + ball.dirY);
+}
+
 let raf;
 // let distanceTravelled = 0;
 function draw() {
@@ -82,7 +104,7 @@ function draw() {
 			if (ball.curY < ball.radius) {
 				ball.curY = ball.radius;
 				ball.dirY = Math.abs(ball.dirY);
-			} else if (ball.curY > width - ball.radius) {
+			} else if (ball.curY > height - ball.radius) {
 				ball.curY = height - ball.radius;
 				ball.dirY = -Math.abs(ball.dirY);
 			}
@@ -106,37 +128,52 @@ function draw() {
 			ball.curY += ball.dirY * currentSpeed * -Math.sin(ball.direction);
 			ball.distanceTravelled += currentSpeed;
 		}
-
-		// TODO
-		// CODE WHAT HAPPENS WHEN A BALL MAKES ANOTHER MOVE, AND EDIT THAT BALL SO THAT HOLDS THE VALUE THAT IT IS MOVING ETC.
-		// scan through the moving balls, and see what other balls they hit
-		ballsOnTable.forEach((ball) => {
-			ballsOnTable.forEach((otherBall) => {
-				if (
-					ball != otherBall &&
-					Math.hypot(ball.curX - otherBall.curX, ball.curY - otherBall.curY) <=
-						ball.radius + otherBall.radius
-				) {
-					// make 'otherBall' move due to 'ball'
-					otherBall.isMoving = true;
-					otherBall.speed = ball.speed;
-					// otherBall.direction = Math.atan(
-					// 	Math.abs(ball.curY - otherBall.curY / ball.curX - otherBall.curX),
-					// );
-					otherBall.direction = 0;
-
-					// make ball change direction as well
-				}
-			});
-		});
 	});
+	// TODO
+	// CODE WHAT HAPPENS WHEN A BALL MAKES ANOTHER MOVE, AND EDIT THAT BALL SO THAT HOLDS THE VALUE THAT IT IS MOVING ETC.
+	// scan through the moving balls, and see what other balls they hit
+	// ballsOnTable.forEach((ball) => {
+	// 	ballsOnTable.forEach((otherBall) => {
+	for (let i = 0; i < ballsOnTable.length - 1; i++) {
+		for (let j = i + 1; j < ballsOnTable.length; j++) {
+			const ball = ballsOnTable[i];
+			const otherBall = ballsOnTable[j];
 
-	// stop the animations when all balls all aren't moving
-	ballsOnTable.forEach((ball) => {
-		if (ball._isMoving == true) {
+			const distance = Math.hypot(
+				ball.curX - otherBall.curX,
+				ball.curY - otherBall.curY,
+			);
+			if (ball.isMoving && distance <= ball.radius + otherBall.radius) {
+				otherBall.isMoving = true;
+				otherBall.speed = ball.speed;
+				const deltaX = otherBall.curX - ball.curX; // why does the order matter??
+				const deltaY = otherBall.curY - ball.curY;
+				otherBall.direction = Math.atan(deltaY / deltaX);
+				otherBall.distanceTravelled = 0;
+				// change direction of dirX and dirY
+				changeDirections(otherBall);
+				// make white ball change direction as well
+				// ball.direction = 2 * Math.PI + 1 / otherBall.direction;
+				// console.log(ball.direction);
+				ball.direction = (Math.abs(2 * Math.PI - otherBall.direction) * 1) / 2;
+				// console.log(ball.direction);
+				// ball.direction = Math.PI;
+				changeDirections(ball);
+			}
+		}
+
+		// links:
+		// implement the below, becuase instead of silly dirX and dirY, you can just use velocity vectors which lowkey make more sense
+		// and implement the rotation formulas, as it's too complicated rn,
+		// i will only do it for this section as i want to leave 2_wall_ball alone as it works and shows my old implementation that i made myself and understand
+		// https://www.101computing.net/elastic-collision-in-a-pool-game/
+		// YT video: https://www.youtube.com/watch?v=dJNFPv9Mj-Y
+
+		// stop the animations when all balls all aren't moving
+		if (ballsOnTable.some((ball) => ball.isMoving)) {
 			raf = window.requestAnimationFrame(draw);
 		}
-	});
+	}
 }
 
 strikeBtn.addEventListener("click", function () {
@@ -161,6 +198,8 @@ restartBtn.addEventListener("click", function () {
 	ballsOnTable.forEach((ball) => {
 		ball.curX = ball.startX;
 		ball.curY = ball.startY;
+		ball.dirX = 1;
+		ball.dirY = 1;
 		ball.distanceTravelled = 0;
 		ball.speed = 0;
 		ball.isMoving = false;
