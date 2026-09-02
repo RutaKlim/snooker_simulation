@@ -2,8 +2,8 @@ export class Ball {
 	_radius = 6;
 	_curX;
 	_curY;
-	_dirX = 1;
-	_dirY = 1;
+	_velocityX = 1;
+	_velocityY = 1;
 	_isMoving = false;
 	_speed = 0;
 	_direction = 0; // given in RADIANS
@@ -44,12 +44,6 @@ export class Ball {
 	get curY() {
 		return this._curY;
 	}
-	get dirX() {
-		return this._dirX;
-	}
-	get dirY() {
-		return this._dirY;
-	}
 	get isMoving() {
 		return this._isMoving;
 	}
@@ -62,6 +56,12 @@ export class Ball {
 	get distanceTravelled() {
 		return this._distanceTravelled;
 	}
+	get velocityX() {
+		return this._velocityX;
+	}
+	get velocityY() {
+		return this._velocityY;
+	}
 
 	// Setters
 	set radius(radius) {
@@ -72,12 +72,6 @@ export class Ball {
 	}
 	set curY(curY) {
 		this._curY = curY;
-	}
-	set dirX(dirX) {
-		this._dirX = dirX;
-	}
-	set dirY(dirY) {
-		this._dirY = dirY;
 	}
 	set isMoving(isMoving) {
 		this._isMoving = isMoving;
@@ -90,6 +84,12 @@ export class Ball {
 	}
 	set distanceTravelled(distanceTravelled) {
 		this._distanceTravelled = distanceTravelled;
+	}
+	set velocityX(velocityX) {
+		this._velocityX = velocityX;
+	}
+	set velocityY(velocityY) {
+		this._velocityY = velocityY;
 	}
 
 	drawBall(c) {
