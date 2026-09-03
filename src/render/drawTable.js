@@ -1,18 +1,14 @@
-// table
-const table = document.getElementById("table");
-// 12 * 6 ft
-// i did 600 * 300 px
+export function drawTable(table, originX, originY, tableWidth, tableHeight) {
+	const c = table.getContext("2d");
+	// 12 * 6 ft
+	// i did 600 * 300 px
 
-const c = table.getContext("2d");
+	const width = tableWidth;
+	const height = tableHeight;
 
-const width = table.width;
-const height = table.height;
-
-drawTable(c);
-function drawTable(c) {
 	// table
 	c.fillStyle = "green";
-	c.fillRect(0, 0, width, height);
+	c.fillRect(originX, originY, width, height);
 
 	// lines
 	//------------------------------------------------
@@ -21,13 +17,20 @@ function drawTable(c) {
 	// baulk line
 	c.beginPath();
 	c.lineWidth = 0.5;
-	c.moveTo(width / 5, 0);
-	c.lineTo(width / 5, height);
+	c.moveTo(originX + width / 5, originY);
+	c.lineTo(originX + width / 5, originY + height);
 	c.stroke();
 
 	// D line
 	c.beginPath();
-	c.arc(width / 5, height / 2, height / 6, Math.PI * 1.5, Math.PI / 2, true);
+	c.arc(
+		originX + width / 5,
+		originY + height / 2,
+		height / 6,
+		Math.PI * 1.5,
+		Math.PI / 2,
+		true,
+	);
 	c.stroke();
 
 	// faint locations of where the coloured balls go
@@ -36,7 +39,7 @@ function drawTable(c) {
 
 	function drawDot(x, y) {
 		c.beginPath();
-		c.arc(x, y, 2, 0, Math.PI * 2, true);
+		c.arc(originX + x, originY + y, 2, 0, Math.PI * 2, true);
 		c.fill();
 	}
 
@@ -53,8 +56,3 @@ function drawTable(c) {
 	// 6. black
 	drawDot(width * (10 / 11), height / 2);
 }
-
-// section which just draws out the table to show
-const cDrawing = document.getElementById("table_drawing").getContext("2d");
-
-drawTable(cDrawing);

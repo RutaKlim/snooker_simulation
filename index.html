@@ -282,5 +282,95 @@
 				</button>
 			</div>
 		</section>
+		<!-- section #4 - building the real game -->
+		<section class="mx-5 mt-8 pb-12">
+			<div class="text-4xl font-medium">#4 Building the real game</div>
+			<div class="w-full h-0.5 bg-gray-800 mt-2 mb-5"></div>
+			<p class="mb-3 text-lg">
+				This will still include a lot different elements that I will add on, but
+				instead of section-by-section, I will just keep adding it onto the game,
+				as I have the physics working.
+			</p>
+			<p class="mb-3 text-lg">Will implement:</p>
+			<ul class="*:mb-2 text-lg pl-6">
+				<li>• Cue stick using mouse events</li>
+				<li>• Eventually calculating initial velocity using the cue stick</li>
+				<li>• potting balls, and removing them from the table and game</li>
+				<li>• Point system (recording tally for number of points potted)</li>
+				<li>• Point deduction/ fault message when invalid ball is hit</li>
+				<li>• feature for either solo practice game or duo game</li>
+				<li>
+					• stats section, so you can see statistics about the game, including:
+				</li>
+				<ul class="pl-8 *:mb-1.5">
+					<li>• average accuracy</li>
+					<li>• number of balls hit</li>
+					<li>• how long the game's been played</li>
+					<li>• total points</li>
+					<li>• etc</li>
+				</ul>
+				<li>• feature that shows predicted path of cueball</li>
+			</ul>
+			<div class="*:mb-3 mt-10">
+				<div class="flex items-center gap-2">
+					<div>Initial speed:</div>
+					<input
+						type="number"
+						id="game_speed"
+						value="7"
+						class="border w-20 pl-3 pr-2 h-10 rounded-sm"
+					/>
+					<p class="ml-3">(applied to the cue ball)</p>
+				</div>
+				<div class="flex items-center gap-2">
+					<div>Deceleration:</div>
+					<input
+						type="number"
+						id="game_deceleration"
+						value="-0.02"
+						class="border w-25 pl-3 pr-2 h-10 rounded-sm"
+					/>
+					<p class="ml-3">
+						(Deceleration due to friction from the table and air resistence)
+					</p>
+				</div>
+				<div class="flex items-center gap-2">
+					<div>Angle:</div>
+					<input
+						type="number"
+						id="game_angle_degrees"
+						value="0"
+						class="border w-20 pl-3 pr-2 h-10 rounded-sm"
+					/>
+					<div class="text-2xl">°</div>
+					<p class="ml-3">
+						(0 ≤ θ ≤ 360, radian anticlockwise format) <-- now in degrees for
+						improved UX
+					</p>
+				</div>
+			</div>
+			<p class="text-sm mt-2 text-gray-300">
+				(To apply the new values, press 'strike' again)
+			</p>
+			<!-- start - canvas -->
+			<div class="flex justify-center items-center w-full mt-8 mb-7">
+				<canvas id="game_canvas" width="1100" height="650"></canvas>
+			</div>
+			<!-- end - canvas -->
+			<div class="flex justify-center gap-6 mt-2">
+				<button
+					id="test3_strike"
+					class="border border-amber-50 w-25 py-1 cursor-pointer rounded-sm"
+				>
+					strike ▶️
+				</button>
+				<button
+					id="test3_restart"
+					class="border border-amber-50 w-25 py-1 cursor-pointer rounded-sm"
+				>
+					restart 🔄️
+				</button>
+			</div>
+		</section>
 	</body>
 </html>

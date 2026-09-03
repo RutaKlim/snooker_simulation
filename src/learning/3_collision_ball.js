@@ -27,9 +27,28 @@ cueBall.radius = 15;
 cueBall.drawBall(c);
 
 // Red ball (target ball)
-const redBall = new Ball("#d91002", true, 1, true, (width * 3) / 4, height / 2);
-redBall.radius = 15;
-redBall.drawBall(c);
+const redBall1 = new Ball(
+	"#d91002",
+	true,
+	1,
+	true,
+	(width * 3) / 4,
+	height / 2,
+);
+redBall1.radius = 15;
+redBall1.drawBall(c);
+
+// red ball (another ball for the target to hit)
+const redBall2 = new Ball(
+	"#d91002",
+	true,
+	1,
+	true,
+	(width * 6) / 7,
+	(height * 4) / 5,
+);
+redBall2.radius = 15;
+redBall2.drawBall(c);
 
 // Initial speed by the cue ball
 cueBall.speed = Number(document.getElementById("collision_ball_speed").value);
@@ -55,7 +74,7 @@ function calcDirectionForCueBall() {
 calcDirectionForCueBall();
 
 // array of ball objects that are on the table
-const ballsOnTable = [cueBall, redBall];
+const ballsOnTable = [cueBall, redBall1, redBall2];
 
 function resolveCollision(ball, otherBall) {
 	const deltaX = otherBall.curX - ball.curX;
