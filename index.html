@@ -4,7 +4,7 @@
 		<meta charset="UTF-8" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Snooker Simulation</title>
+		<title>🎱 Snooker Simulation</title>
 		<script defer type="module" src="/src/main.js"></script>
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -293,6 +293,7 @@
 			</p>
 			<p class="mb-3 text-lg">Will implement:</p>
 			<ul class="*:mb-2 text-lg pl-6">
+				<li>• Add pockets and borders</li>
 				<li>• Cue stick using mouse events</li>
 				<li>• Eventually calculating initial velocity using the cue stick</li>
 				<li>• potting balls, and removing them from the table and game</li>
@@ -344,7 +345,7 @@
 					/>
 					<div class="text-2xl">°</div>
 					<p class="ml-3">
-						(0 ≤ θ ≤ 360, radian anticlockwise format) <-- now in degrees for
+						(0 ≤ θ ≤ 360, radian anticlockwise format) ⬅️ now in degrees for
 						improved UX
 					</p>
 				</div>
@@ -352,21 +353,23 @@
 			<p class="text-sm mt-2 text-gray-300">
 				(To apply the new values, press 'strike' again)
 			</p>
+			<!-- game panel -->
+			<section></section>
 			<!-- start - canvas -->
 			<div class="flex justify-center items-center w-full mt-8 mb-7">
-				<canvas id="game_canvas" width="1100" height="650"></canvas>
+				<canvas id="game_canvas" width="900" height="550"></canvas>
 			</div>
 			<!-- end - canvas -->
 			<div class="flex justify-center gap-6 mt-2">
 				<button
 					id="test3_strike"
-					class="border border-amber-50 w-25 py-1 cursor-pointer rounded-sm"
+					class="border border-amber-50 w-35 py-1 cursor-pointer rounded-sm"
 				>
-					strike ▶️
+					start game ▶️
 				</button>
 				<button
 					id="test3_restart"
-					class="border border-amber-50 w-25 py-1 cursor-pointer rounded-sm"
+					class="border border-amber-50 w-35 py-1 cursor-pointer rounded-sm"
 				>
 					restart 🔄️
 				</button>

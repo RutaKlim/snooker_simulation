@@ -1,4 +1,5 @@
 import { Ball } from "../physics/ball.js";
+import { CueBall } from "../physics/ball.js";
 import { drawAllBallsAtStartingPos } from "../render/drawBall.js";
 import { drawTable } from "../render/drawTable.js";
 
@@ -18,6 +19,12 @@ const height = 350;
 const topLeftTableX = (cWidth - width) / 2;
 const topLeftTableY = (cHeight - height) / 2;
 
+const cueBall = new CueBall(
+	true,
+	topLeftTableX + (width * 2) / 11, // temp rn
+	topLeftTableY + (height * 9) / 15, // temp rn
+);
+
 const initialSpeed = document.getElementById("game_speed").value;
 const deceleration = document.getElementById("game_deceleration").value;
 // Angle - also for the cue ball
@@ -25,7 +32,7 @@ function calcDirectionForCueBall() {
 	const angle_degree = Number(
 		document.getElementById("game_angle_degrees").value,
 	);
-	// TODO FINISH HERE
+
 	// changeDirections(cueBall);
 }
 calcDirectionForCueBall();
@@ -211,6 +218,7 @@ const redBall15 = new Ball(
 );
 
 const balls = [
+	cueBall,
 	yellowBall,
 	brownBall,
 	greenBall,

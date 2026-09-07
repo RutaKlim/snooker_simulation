@@ -6,9 +6,109 @@ export function drawTable(table, originX, originY, tableWidth, tableHeight) {
 	const width = tableWidth;
 	const height = tableHeight;
 
+	const pocketR = 10;
+	const borderW = 22;
+
+	// cushion rail
+	c.fillStyle = "#4f3611";
+	c.beginPath();
+	c.moveTo(originX - borderW, originY);
+	c.quadraticCurveTo(
+		originX - borderW,
+		originY - borderW,
+		originX,
+		originY - borderW,
+	);
+	c.lineTo(originX + tableWidth, originY - borderW);
+	c.quadraticCurveTo(
+		originX + tableWidth + borderW,
+		originY - borderW,
+		originX + tableWidth + borderW,
+		originY,
+	);
+	c.lineTo(originX + tableWidth + borderW, originY + tableHeight);
+	c.quadraticCurveTo(
+		originX + tableWidth + borderW,
+		originY + tableHeight + borderW,
+		originX + tableWidth,
+		originY + tableHeight + borderW,
+	);
+	c.lineTo(originX, originY + tableHeight + borderW);
+	c.quadraticCurveTo(
+		originX - borderW,
+		originY + tableHeight + borderW,
+		originX - borderW,
+		originY + tableHeight,
+	);
+	c.lineTo(originX - borderW, originY);
+	c.fill();
+
+	// pocket padding colours
+
 	// table
 	c.fillStyle = "green";
 	c.fillRect(originX, originY, width, height);
+
+	// borders
+	// -----------------------------
+	// top left
+	c.strokeStyle = "white";
+	c.beginPath();
+	c.moveTo(originX + pocketR, originY - 2);
+	c.lineTo(15 + originX + pocketR, originY + 10);
+	c.lineTo(originX + tableWidth / 2 - pocketR - 3, originY + 10);
+	c.lineTo(originX + tableWidth / 2 - pocketR, originY);
+
+	// top right
+	c.moveTo(originX + tableWidth / 2 + pocketR, originY);
+	c.lineTo(originX + tableWidth / 2 + pocketR + 3, originY + 10);
+	c.lineTo(originX + tableWidth - 15 - pocketR, originY + 10);
+	c.lineTo(originX + tableWidth - pocketR - 3, originY);
+
+	// right
+	c.moveTo(originX + tableWidth + 3, originY + pocketR);
+	c.lineTo(originX + tableWidth - pocketR, originY + pocketR + 15);
+	c.lineTo(
+		originX + tableWidth - pocketR,
+		originY + tableHeight - 15 - pocketR,
+	);
+	c.lineTo(originX + tableWidth + 3, originY + tableHeight - pocketR);
+
+	// bottom right
+	c.moveTo(originX + tableWidth / 2 + pocketR, originY + tableHeight);
+	c.lineTo(originX + tableWidth / 2 + pocketR + 3, originY + tableHeight - 10);
+	c.lineTo(originX + tableWidth - 15 - pocketR, originY + tableHeight - 10);
+	c.lineTo(originX + tableWidth - pocketR - 3, originY + tableHeight);
+
+	// bottom left
+	c.strokeStyle = "white";
+	c.moveTo(originX + pocketR, originY + tableHeight + 2);
+	c.lineTo(15 + originX + pocketR, originY + tableHeight - 10);
+	c.lineTo(originX + tableWidth / 2 - pocketR - 3, originY + tableHeight - 10);
+	c.lineTo(originX + tableWidth / 2 - pocketR, originY + tableHeight);
+
+	// left
+	c.moveTo(originX - 3, originY + pocketR);
+	c.lineTo(originX + pocketR, originY + pocketR + 15);
+	c.lineTo(originX + pocketR, originY + tableHeight - 15 - pocketR);
+	c.lineTo(originX - 3, originY + tableHeight - pocketR);
+
+	// ---
+	c.stroke();
+
+	// pockets
+	function drawPocket(x, y) {
+		c.fillStyle = "black";
+		c.beginPath();
+		c.arc(originX + x, originY + y, pocketR, 0, Math.PI * 2, true);
+		c.fill();
+	}
+	drawPocket(0 + 5, 0 + 5);
+	drawPocket(tableWidth / 2, 0);
+	drawPocket(tableWidth - 5, 0 + 5);
+	drawPocket(tableWidth - 5, tableHeight - 5);
+	drawPocket(tableWidth / 2, tableHeight);
+	drawPocket(0 + 5, tableHeight - 5);
 
 	// lines
 	//------------------------------------------------
