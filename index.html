@@ -340,7 +340,7 @@
 					<input
 						type="number"
 						id="game_angle_degrees"
-						value="0"
+						value="2.5"
 						class="border w-20 pl-3 pr-2 h-10 rounded-sm"
 					/>
 					<div class="text-2xl">°</div>
@@ -354,26 +354,33 @@
 				(To apply the new values, press 'strike' again)
 			</p>
 			<!-- game panel -->
-			<section></section>
+			<section>
+				<div class="flex justify-center gap-6 mt-10">
+					<button
+						id="start_btn"
+						class="border border-amber-50 w-35 py-1 cursor-pointer rounded-sm"
+					>
+						start game ▶️
+					</button>
+					<button
+						id="strike_btn"
+						class="border border-amber-50 w-40 py-1 cursor-pointer rounded-sm"
+					>
+						strike cue ball 🎯
+					</button>
+					<button
+						id="restart_btn"
+						class="border border-amber-50 w-35 py-1 cursor-pointer rounded-sm"
+					>
+						restart 🔄️
+					</button>
+				</div>
+			</section>
 			<!-- start - canvas -->
 			<div class="flex justify-center items-center w-full mt-8 mb-7">
 				<canvas id="game_canvas" width="900" height="550"></canvas>
 			</div>
 			<!-- end - canvas -->
-			<div class="flex justify-center gap-6 mt-2">
-				<button
-					id="test3_strike"
-					class="border border-amber-50 w-35 py-1 cursor-pointer rounded-sm"
-				>
-					start game ▶️
-				</button>
-				<button
-					id="test3_restart"
-					class="border border-amber-50 w-35 py-1 cursor-pointer rounded-sm"
-				>
-					restart 🔄️
-				</button>
-			</div>
 		</section>
 	</body>
 </html>

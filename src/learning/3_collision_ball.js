@@ -113,7 +113,6 @@ function resolveCollision(ball, otherBall) {
 
 function changeDirections(ball) {
 	let d = ball.direction;
-	// console.log(2 * Math.PI);
 	if (0 <= d && d < Math.PI / 2) {
 		ball.velocityX = Math.abs(ball.velocityX);
 		ball.velocityY = -Math.abs(ball.velocityY);
@@ -267,12 +266,12 @@ function draw() {
 	// https://www.101computing.net/elastic-collision-in-a-pool-game/
 	// YT video: https://www.youtube.com/watch?v=dJNFPv9Mj-Y
 
-	// stop the animations when all balls all aren't moving
-	// if (ballsOnTable.some((ball) => ball.isMoving)) {
-	// 	raf = window.requestAnimationFrame(draw);
-	// }
-
-	raf = window.requestAnimationFrame(draw);
+	// stop the animations when all balls aren't moving
+	if (ballsOnTable.some((ball) => ball.isMoving)) {
+		raf = window.requestAnimationFrame(draw);
+	} else {
+		window.cancelAnimationFrame(raf);
+	}
 }
 
 strikeBtn.addEventListener("click", function () {
