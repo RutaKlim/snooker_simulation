@@ -296,6 +296,8 @@ function changeDirections(ball) {
 
 // makes the balls be able to bounce off eacother
 function resolveCollision(ball, otherBall) {
+	if (!ball.isMoving && !otherBall.isMoving) return;
+
 	const deltaX = otherBall.curX - ball.curX;
 	const deltaY = otherBall.curY - ball.curY;
 	const distance = Math.hypot(deltaX, deltaY);
@@ -309,9 +311,9 @@ function resolveCollision(ball, otherBall) {
 
 	// Separate the balls so the same impact is not resolved repeatedly.
 	ball.curX -= (normalX * overlap) / 2;
+	ball.curY -= (normalX * overlap) / 2;
 	otherBall.curX += (normalX * overlap) / 2;
-	ball.curX += (normalX * overlap) / 2;
-	otherBall.curX -= (normalX * overlap) / 2;
+	otherBall.curY += (normalX * overlap) / 2;
 
 	const relativeVelocityX = otherBall.velocityX - ball.velocityX;
 	const relativeVelocityY = otherBall.velocityY - ball.velocityY;
@@ -327,6 +329,7 @@ function resolveCollision(ball, otherBall) {
 	ball.velocityY -= impulse * normalY;
 	otherBall.velocityX += impulse * normalX;
 	otherBall.velocityY += impulse * normalY;
+	ball.isMoving = true;
 	otherBall.isMoving = true;
 }
 
@@ -377,7 +380,7 @@ function draw() {
 			const speed = Math.hypot(ball.velocityX, ball.velocityY);
 			const nextSpeed = speed + deceleration;
 
-			if (nextSpeed < 0.001) {
+			if (speed < 0.001 || nextSpeed < 0.001) {
 				ball.velocityX = 0;
 				ball.velocityY = 0;
 				ball.isMoving = false;
@@ -420,8 +423,8 @@ restartBtn.addEventListener("click", function () {
 	ballsOnTable.forEach((ball) => {
 		ball.curX = ball.startX;
 		ball.curY = ball.startY;
-		ball.velocityX = 1;
-		ball.velocityY = 1;
+		ball.velocityX = 0;
+		ball.velocityY = 0;
 		ball.distanceTravelled = 0;
 		ball.speed = 0;
 		ball.isMoving = false;

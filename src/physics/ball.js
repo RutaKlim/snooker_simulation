@@ -2,8 +2,8 @@ export class Ball {
 	_radius = 6;
 	_curX;
 	_curY;
-	_velocityX = 1;
-	_velocityY = 1;
+	_velocityX = 0;
+	_velocityY = 0;
 	_isMoving = false;
 	_speed = 0;
 	_direction = 0; // given in RADIANS
