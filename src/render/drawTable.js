@@ -1,4 +1,11 @@
-export function drawTable(table, originX, originY, tableWidth, tableHeight) {
+export function drawTable(
+	table,
+	originX,
+	originY,
+	tableWidth,
+	tableHeight,
+	pocketD,
+) {
 	const c = table.getContext("2d");
 	// 12 * 6 ft
 	// i did 600 * 300 px
@@ -6,7 +13,6 @@ export function drawTable(table, originX, originY, tableWidth, tableHeight) {
 	const width = tableWidth;
 	const height = tableHeight;
 
-	const pocketR = 10;
 	const borderW = 22;
 
 	// cushion rail
@@ -54,44 +60,44 @@ export function drawTable(table, originX, originY, tableWidth, tableHeight) {
 	// top left
 	c.strokeStyle = "white";
 	c.beginPath();
-	c.moveTo(originX + pocketR, originY - 2);
-	c.lineTo(15 + originX + pocketR, originY + 10);
-	c.lineTo(originX + tableWidth / 2 - pocketR - 3, originY + 10);
-	c.lineTo(originX + tableWidth / 2 - pocketR, originY);
+	c.moveTo(originX + pocketD + 3, originY);
+	c.lineTo(15 + originX + pocketD, originY + 10);
+	c.lineTo(originX + tableWidth / 2 - pocketD - 3, originY + 10);
+	c.lineTo(originX + tableWidth / 2 - pocketD, originY);
 
 	// top right
-	c.moveTo(originX + tableWidth / 2 + pocketR, originY);
-	c.lineTo(originX + tableWidth / 2 + pocketR + 3, originY + 10);
-	c.lineTo(originX + tableWidth - 15 - pocketR, originY + 10);
-	c.lineTo(originX + tableWidth - pocketR - 3, originY);
+	c.moveTo(originX + tableWidth / 2 + pocketD, originY);
+	c.lineTo(originX + tableWidth / 2 + pocketD + 3, originY + 10);
+	c.lineTo(originX + tableWidth - 15 - pocketD, originY + 10);
+	c.lineTo(originX + tableWidth - pocketD - 3, originY);
 
 	// right
-	c.moveTo(originX + tableWidth + 3, originY + pocketR);
-	c.lineTo(originX + tableWidth - pocketR, originY + pocketR + 15);
+	c.moveTo(originX + tableWidth + 3, originY + pocketD);
+	c.lineTo(originX + tableWidth - pocketD, originY + pocketD + 15);
 	c.lineTo(
-		originX + tableWidth - pocketR,
-		originY + tableHeight - 15 - pocketR,
+		originX + tableWidth - pocketD,
+		originY + tableHeight - 15 - pocketD,
 	);
-	c.lineTo(originX + tableWidth + 3, originY + tableHeight - pocketR);
+	c.lineTo(originX + tableWidth + 3, originY + tableHeight - pocketD);
 
 	// bottom right
-	c.moveTo(originX + tableWidth / 2 + pocketR, originY + tableHeight);
-	c.lineTo(originX + tableWidth / 2 + pocketR + 3, originY + tableHeight - 10);
-	c.lineTo(originX + tableWidth - 15 - pocketR, originY + tableHeight - 10);
-	c.lineTo(originX + tableWidth - pocketR - 3, originY + tableHeight);
+	c.moveTo(originX + tableWidth / 2 + pocketD, originY + tableHeight);
+	c.lineTo(originX + tableWidth / 2 + pocketD + 3, originY + tableHeight - 10);
+	c.lineTo(originX + tableWidth - 15 - pocketD, originY + tableHeight - 10);
+	c.lineTo(originX + tableWidth - pocketD - 3, originY + tableHeight);
 
 	// bottom left
 	c.strokeStyle = "white";
-	c.moveTo(originX + pocketR, originY + tableHeight + 2);
-	c.lineTo(15 + originX + pocketR, originY + tableHeight - 10);
-	c.lineTo(originX + tableWidth / 2 - pocketR - 3, originY + tableHeight - 10);
-	c.lineTo(originX + tableWidth / 2 - pocketR, originY + tableHeight);
+	c.moveTo(originX + pocketD, originY + tableHeight + 3);
+	c.lineTo(15 + originX + pocketD, originY + tableHeight - 10);
+	c.lineTo(originX + tableWidth / 2 - pocketD - 3, originY + tableHeight - 10);
+	c.lineTo(originX + tableWidth / 2 - pocketD, originY + tableHeight);
 
 	// left
-	c.moveTo(originX - 3, originY + pocketR);
-	c.lineTo(originX + pocketR, originY + pocketR + 15);
-	c.lineTo(originX + pocketR, originY + tableHeight - 15 - pocketR);
-	c.lineTo(originX - 3, originY + tableHeight - pocketR);
+	c.moveTo(originX - 3, originY + pocketD);
+	c.lineTo(originX + pocketD, originY + pocketD + 15);
+	c.lineTo(originX + pocketD, originY + tableHeight - 15 - pocketD);
+	c.lineTo(originX - 3, originY + tableHeight - pocketD);
 
 	// ---
 	c.stroke();
@@ -100,7 +106,7 @@ export function drawTable(table, originX, originY, tableWidth, tableHeight) {
 	function drawPocket(x, y) {
 		c.fillStyle = "black";
 		c.beginPath();
-		c.arc(originX + x, originY + y, pocketR, 0, Math.PI * 2, true);
+		c.arc(originX + x, originY + y, pocketD, 0, Math.PI * 2, true);
 		c.fill();
 	}
 	drawPocket(0 + 5, 0 + 5);
@@ -117,8 +123,8 @@ export function drawTable(table, originX, originY, tableWidth, tableHeight) {
 	// baulk line
 	c.beginPath();
 	c.lineWidth = 0.5;
-	c.moveTo(originX + width / 5, originY);
-	c.lineTo(originX + width / 5, originY + height);
+	c.moveTo(originX + width / 5, originY + pocketD);
+	c.lineTo(originX + width / 5, originY + height - pocketD);
 	c.stroke();
 
 	// D line

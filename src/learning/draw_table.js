@@ -201,8 +201,8 @@ const balls = [
 const tableDrawing = document.getElementById("table_drawing");
 
 // draw tables
-drawTable(tableDrawing, 0, 0, tableDrawing.width, tableDrawing.height);
-drawTable(table, 0, 0, table.width, table.height);
+drawTable(tableDrawing, 0, 0, tableDrawing.width, tableDrawing.height, 10);
+drawTable(table, 0, 0, table.width, table.height, 10);
 
 // draw balls
 drawAllBallsAtStartingPos(balls, table);

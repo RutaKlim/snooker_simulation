@@ -131,3 +131,21 @@ export class CueBall extends Ball {
 		this._shotPower = shotPower;
 	}
 }
+
+// using the 'direction' value of the ball, make either velocity positive or negative
+export function changeDirections(ball) {
+	let d = ball.direction;
+	if (0 <= d && d < Math.PI / 2) {
+		ball.velocityX = Math.abs(ball.velocityX);
+		ball.velocityY = -Math.abs(ball.velocityY);
+	} else if (Math.PI / 2 <= d && d < Math.PI) {
+		ball.velocityX = -Math.abs(ball.velocityX);
+		ball.velocityY = -Math.abs(ball.velocityY);
+	} else if (Math.PI <= d && d < (Math.PI * 3) / 2) {
+		ball.velocityX = -Math.abs(ball.velocityX);
+		ball.velocityY = Math.abs(ball.velocityY);
+	} else if ((Math.PI * 3) / 2 <= d && d < 2 * Math.PI) {
+		ball.velocityX = Math.abs(ball.velocityX);
+		ball.velocityY = Math.abs(ball.velocityY);
+	}
+}

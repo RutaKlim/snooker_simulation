@@ -1,8 +1,12 @@
 import { Ball } from "../physics/ball.js";
 import { CueBall } from "../physics/ball.js";
+import { drawTable } from "../render/drawTable.js";
 import { drawAllBallsAtStartingPos } from "../render/drawBall.js";
 import { drawAllBalls } from "../render/drawBall.js";
-import { drawTable } from "../render/drawTable.js";
+import { resolveCollision } from "../physics/collision.js";
+import { wallDeflection } from "../physics/collision.js";
+import { takeBallOffTable } from "../physics/collision.js";
+import { changeDirections } from "../physics/ball.js";
 
 // VARIABLES
 //--------------------------------------
@@ -12,6 +16,7 @@ const c = gameCanvas.getContext("2d");
 // buttons
 const startBtn = document.getElementById("start_btn");
 const restartBtn = document.getElementById("restart_btn");
+const strikeBtn = document.getElementById("strike_btn");
 
 // canvas dimensions
 const cWidth = gameCanvas.width;
@@ -23,6 +28,8 @@ const height = 350;
 
 const tableLeft = (cWidth - width) / 2;
 const tableTop = (cHeight - height) / 2;
+
+const pocketD = 10;
 
 let deceleration = document.getElementById("game_deceleration").value;
 
@@ -254,7 +261,7 @@ drawRect();
 
 // Draw table and balls in starting position
 function _drawTable() {
-	drawTable(gameCanvas, tableLeft, tableTop, width, height);
+	drawTable(gameCanvas, tableLeft, tableTop, width, height, pocketD);
 }
 _drawTable();
 drawAllBallsAtStartingPos(allBalls, gameCanvas);
@@ -276,94 +283,12 @@ function calcValuesForCueBall() {
 	changeDirections(cueBall);
 }
 
-// using the 'direction' value of the ball, make either velocity positive or negative
-function changeDirections(ball) {
-	let d = ball.direction;
-	if (0 <= d && d < Math.PI / 2) {
-		ball.velocityX = Math.abs(ball.velocityX);
-		ball.velocityY = -Math.abs(ball.velocityY);
-	} else if (Math.PI / 2 <= d && d < Math.PI) {
-		ball.velocityX = -Math.abs(ball.velocityX);
-		ball.velocityY = -Math.abs(ball.velocityY);
-	} else if (Math.PI <= d && d < (Math.PI * 3) / 2) {
-		ball.velocityX = -Math.abs(ball.velocityX);
-		ball.velocityY = Math.abs(ball.velocityY);
-	} else if ((Math.PI * 3) / 2 <= d && d < 2 * Math.PI) {
-		ball.velocityX = Math.abs(ball.velocityX);
-		ball.velocityY = Math.abs(ball.velocityY);
-	}
-}
-
-// makes the balls be able to bounce off eacother
-function resolveCollision(ball, otherBall) {
-	if (!ball.isMoving && !otherBall.isMoving) return;
-
-	const deltaX = otherBall.curX - ball.curX;
-	const deltaY = otherBall.curY - ball.curY;
-	const distance = Math.hypot(deltaX, deltaY);
-	const minDistance = ball.radius + otherBall.radius;
-
-	if (distance === 0 || distance >= minDistance) return;
-
-	const normalX = deltaX / distance;
-	const normalY = deltaY / distance;
-	const overlap = minDistance - distance;
-
-	// Separate the balls so the same impact is not resolved repeatedly.
-	ball.curX -= (normalX * overlap) / 2;
-	ball.curY -= (normalX * overlap) / 2;
-	otherBall.curX += (normalX * overlap) / 2;
-	otherBall.curY += (normalX * overlap) / 2;
-
-	const relativeVelocityX = otherBall.velocityX - ball.velocityX;
-	const relativeVelocityY = otherBall.velocityY - ball.velocityY;
-	const velocityAlongNormal =
-		relativeVelocityX * normalX + relativeVelocityY * normalY;
-
-	// Do not bounce balls that are already moving apart.
-	if (velocityAlongNormal >= 0) return;
-
-	// Equal masses and a perfectly elastic collision.
-	const impulse = -(2 * velocityAlongNormal) / 2;
-	ball.velocityX -= impulse * normalX;
-	ball.velocityY -= impulse * normalY;
-	otherBall.velocityX += impulse * normalX;
-	otherBall.velocityY += impulse * normalY;
-	ball.isMoving = true;
-	otherBall.isMoving = true;
-}
-
-const borderW = 10;
-// makes the balls bounce of the walls
-function wallDeflection() {
-	ballsOnTable.forEach((ball) => {
-		// X
-		if (ball.curX < tableLeft + ball.radius + borderW) {
-			ball.curX = tableLeft + ball.radius + borderW;
-			ball.velocityX = Math.abs(ball.velocityX);
-		} else if (ball.curX > tableLeft + width - ball.radius - borderW) {
-			ball.curX = tableLeft + width - ball.radius - borderW;
-			ball.velocityX = -Math.abs(ball.velocityX);
-		}
-		// Y
-		if (ball.curY < tableTop + ball.radius + borderW) {
-			ball.curY = tableTop + ball.radius + borderW;
-			ball.velocityY = Math.abs(ball.velocityY);
-		} else if (ball.curY > tableTop + height - ball.radius - borderW) {
-			ball.curY = tableTop + height - ball.radius - borderW;
-			ball.velocityY = -Math.abs(ball.velocityY);
-		}
-	});
-}
-
 let raf;
 // animation
 function draw() {
 	clearAll();
 	_drawTable();
 	drawAllBalls(ballsOnTable, c);
-
-	wallDeflection();
 
 	// scan through the moving balls, and see what other balls they hit
 	if (ballsOnTable.length > 1) {
@@ -380,6 +305,9 @@ function draw() {
 			const speed = Math.hypot(ball.velocityX, ball.velocityY);
 			const nextSpeed = speed + deceleration;
 
+			const maxStep = 6;
+			const steps = Math.ceil(speed / maxStep);
+
 			if (speed < 0.001 || nextSpeed < 0.001) {
 				ball.velocityX = 0;
 				ball.velocityY = 0;
@@ -392,8 +320,19 @@ function draw() {
 			ball.velocityX *= scale;
 			ball.velocityY *= scale;
 
-			ball.curX += ball.velocityX;
-			ball.curY += ball.velocityY;
+			for (let step = 0; step < steps; step++) {
+				ball.curX += ball.velocityX / steps;
+				ball.curY += ball.velocityY / steps;
+
+				wallDeflection(
+					ballsOnTable,
+					tableTop,
+					tableLeft,
+					pocketD,
+					width,
+					height,
+				);
+			}
 		}
 	});
 
@@ -407,14 +346,27 @@ function draw() {
 
 // Buttons +  event handlers
 // -------------------------
+// start btn
 startBtn.addEventListener("click", function () {
 	if (!raf) {
+		calcValuesForCueBall();
+		cueBall.isMoving = true;
+		// place white ball down
+		//
+		raf = window.requestAnimationFrame(draw);
+	}
+});
+
+// strike btn
+strikeBtn.addEventListener("click", function () {
+	if (ballsOnTable.every((ball) => !ball.isMoving)) {
 		calcValuesForCueBall();
 		cueBall.isMoving = true;
 		raf = window.requestAnimationFrame(draw);
 	}
 });
 
+// restart btn
 restartBtn.addEventListener("click", function () {
 	window.cancelAnimationFrame(raf);
 	clearAll();
