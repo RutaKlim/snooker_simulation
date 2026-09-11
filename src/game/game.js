@@ -250,6 +250,8 @@ const objectBalls = [
 ];
 const allBalls = [cueBall].concat(objectBalls);
 let ballsOnTable = [...allBalls];
+let ballsPotted = [];
+
 // functions
 // -----------------------
 
@@ -295,11 +297,6 @@ function draw() {
 	_drawTable();
 	drawAllBalls(ballsOnTable, c);
 
-	// check whether a white ball was potted and if it needs to be dropped
-	if (!ballsOnTable.includes(cueBall)) {
-		dropCueBall();
-	}
-
 	// scan through the moving balls, and see what other balls they hit
 	if (ballsOnTable.length > 1) {
 		for (let i = 0; i < ballsOnTable.length - 1; i++) {
@@ -333,16 +330,22 @@ function draw() {
 			for (let step = 0; step < steps; step++) {
 				ball.curX += ball.velocityX / steps;
 				ball.curY += ball.velocityY / steps;
-
-				wallDeflection(
-					ballsOnTable,
-					tableTop,
-					tableLeft,
-					pocketD,
-					width,
-					height,
-				);
 			}
+		}
+	});
+	ballsPotted = wallDeflection(
+		ballsOnTable,
+		tableTop,
+		tableLeft,
+		pocketD,
+		width,
+		height,
+		ballsPotted,
+	);
+	// remove potted balls from drawing
+	ballsPotted.forEach((ball) => {
+		if (ballsOnTable.includes(ball)) {
+			ballsOnTable.splice(ballsOnTable.indexOf(ball), 1);
 		}
 	});
 
@@ -394,15 +397,31 @@ function getCoords(e) {
 let gameFinished = false;
 let gameWon = false;
 function startGame() {
-	// end game
-	if (gameFinished) {
-		window.cancelAnimationFrame(raf);
-		updateMsg("Game finished!!");
-		return;
+	// draw everything
+	clearAll();
+	drawTable();
+	drawAllBalls(ballsOnTable, c);
+
+	// drop cue ball
+	dropCueBall();
+	cueBall.isMoving = true;
+
+	// main loop
+	while (!gameFinished) {
+		if (ballsOnTable.includes(cueBall) && ballsOnTable.size() == 1) {
+			gameFinished = true;
+		}
+		// draw() make balls move, then after that, implement any rules etc.
+		if (ballsOnTable.every((ball) => !ball.isMoving)) {
+			calcValuesForCueBall();
+			cueBall.isMoving = true;
+			raf = window.requestAnimationFrame(draw);
+		}
 	}
 
-	// firstly place the white ball down
-	dropCueBall();
+	// end game
+	window.cancelAnimationFrame(raf); // dont know if this is really needed here
+	updateMsg("Game finished!!");
 }
 
 // Buttons +  event handlers
@@ -413,7 +432,6 @@ startBtn.addEventListener("click", function () {
 		calcValuesForCueBall();
 		cueBall.isMoving = true;
 		// place white ball down
-		//
 		raf = window.requestAnimationFrame(draw);
 	}
 });
@@ -444,6 +462,6 @@ restartBtn.addEventListener("click", function () {
 		ball.isMoving = false;
 		ball.direction = 0;
 	});
-	drawAllBallsAtStartingPos(ballsOnTable, gameCanvas);
+	drawAllBalls(ballsOnTable, c);
 	raf = undefined;
 });

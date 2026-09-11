@@ -52,9 +52,8 @@ export function wallDeflection(
 	pocketD,
 	width,
 	height,
+	ballsPotted,
 ) {
-	const ballsToRemove = [];
-
 	const ballRadius = ballsOnTable[0].radius;
 	const topBorder = tableTop + pocketD + ballRadius;
 	const bottomBorder = tableTop + height - pocketD - ballRadius;
@@ -68,7 +67,7 @@ export function wallDeflection(
 			ball.curY < topBorder - pocketD ||
 			ball.curY > bottomBorder + pocketD
 		) {
-			ballsToRemove.push(ball);
+			ballsPotted.push(ball);
 		} else {
 			// X
 			if (
@@ -105,8 +104,5 @@ export function wallDeflection(
 			}
 		}
 	});
-	// remove the balls
-	ballsToRemove.forEach((ball) => {
-		takeBallOffTable(ball, ballsOnTable);
-	});
+	return ballsPotted;
 }
