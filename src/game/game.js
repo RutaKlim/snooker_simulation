@@ -25,13 +25,18 @@ const cHeight = gameCanvas.height;
 // snooker table dimensions
 const width = 700;
 const height = 350;
-
 const tableLeft = (cWidth - width) / 2;
 const tableTop = (cHeight - height) / 2;
-
 const pocketD = 10;
 
 let deceleration = document.getElementById("game_deceleration").value;
+
+// message
+const message = document.getElementById("message-box");
+export function updateMsg(msg) {
+	message.innerHTML = msg;
+}
+updateMsg("Press 'start game");
 
 // cue ball
 const cueBall = new CueBall(
@@ -290,6 +295,11 @@ function draw() {
 	_drawTable();
 	drawAllBalls(ballsOnTable, c);
 
+	// check whether a white ball was potted and if it needs to be dropped
+	if (!ballsOnTable.includes(cueBall)) {
+		dropCueBall();
+	}
+
 	// scan through the moving balls, and see what other balls they hit
 	if (ballsOnTable.length > 1) {
 		for (let i = 0; i < ballsOnTable.length - 1; i++) {
@@ -344,6 +354,57 @@ function draw() {
 	}
 }
 
+// Moving the white ball
+export function dropCueBall() {
+	// this func will be called when the game starts and when the white ball is potted in
+	// this will paint the D, as a very light green implying to drop the white ball inside that,
+
+	// draw the D a lighter colour
+	c.fillStyle = "#80b370";
+	c.beginPath();
+	c.fillStyle = c.arc(
+		tableLeft + width / 5,
+		tableTop + height / 2,
+		height / 6,
+		Math.PI * 1.5,
+		Math.PI / 2,
+		true,
+	);
+	c.fill();
+	drawAllBalls(ballsOnTable, c);
+	// and there will be a button to click, drop ball which will drop the ball and continue play
+	// called 'ball in hand'
+	// white ball will be in there and it is upto the user to move it to continue/start the game.
+	// make this button visible to drop the ball
+	updateMsg("Drop the cue ball inside the D");
+	console.log("count");
+	gameCanvas.addEventListener("click", (e) => {
+		let coords = getCoords(e);
+		console.log(coords);
+	});
+}
+
+function getCoords(e) {
+	const pos = e.target.getBoundingClientRect();
+	let x = e.clientX;
+	let y = e.clientY;
+	return [(x - pos.x) | 1, (y - pos.y) | 1];
+}
+
+let gameFinished = false;
+let gameWon = false;
+function startGame() {
+	// end game
+	if (gameFinished) {
+		window.cancelAnimationFrame(raf);
+		updateMsg("Game finished!!");
+		return;
+	}
+
+	// firstly place the white ball down
+	dropCueBall();
+}
+
 // Buttons +  event handlers
 // -------------------------
 // start btn
@@ -371,6 +432,7 @@ restartBtn.addEventListener("click", function () {
 	window.cancelAnimationFrame(raf);
 	clearAll();
 	_drawTable();
+	updateMsg("Press 'start game");
 	ballsOnTable = [...allBalls];
 	ballsOnTable.forEach((ball) => {
 		ball.curX = ball.startX;

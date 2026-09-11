@@ -38,30 +38,10 @@ export function resolveCollision(ball, otherBall) {
 }
 
 export function takeBallOffTable(ball, ballsOnTable) {
-	const index = ballsOnTable.indexOf(ball);
-	if (index === -1) return;
-
+	ballsOnTable[ballsOnTable.indexOf(ball)] =
+		ballsOnTable[ballsOnTable.length - 1];
 	ball.isMoving = false;
-	ballsOnTable.splice(index, 1);
-}
-
-function isInPocket(ball, tableTop, tableLeft, width, height, pocketD) {
-	const pocketCenters = [
-		[tableLeft + 5, tableTop + 5],
-		[tableLeft + width / 2, tableTop],
-		[tableLeft + width - 5, tableTop + 5],
-		[tableLeft + width - 5, tableTop + height - 5],
-		[tableLeft + width / 2, tableTop + height],
-		[tableLeft + 5, tableTop + height - 5],
-	];
-	const pocketCaptureRadius = pocketD + ball.radius;
-
-	return pocketCenters.some(([pocketX, pocketY]) => {
-		return (
-			Math.hypot(ball.curX - pocketX, ball.curY - pocketY) <=
-			pocketCaptureRadius
-		);
-	});
+	ballsOnTable.pop();
 }
 
 // makes the balls bounce of the walls
@@ -81,8 +61,13 @@ export function wallDeflection(
 	const leftBorder = tableLeft + pocketD + ballRadius;
 	const rightBorder = tableLeft + width - pocketD - ballRadius;
 	ballsOnTable.forEach((ball) => {
-		// Capture only when the ball is close to one of the six pocket centers.
-		if (isInPocket(ball, tableTop, tableLeft, width, height, pocketD)) {
+		// POCKETS
+		if (
+			ball.curX < leftBorder - pocketD ||
+			ball.curX > rightBorder + pocketD ||
+			ball.curY < topBorder - pocketD ||
+			ball.curY > bottomBorder + pocketD
+		) {
 			ballsToRemove.push(ball);
 		} else {
 			// X
