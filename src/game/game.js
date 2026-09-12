@@ -17,6 +17,7 @@ const c = gameCanvas.getContext("2d");
 const startBtn = document.getElementById("start_btn");
 const restartBtn = document.getElementById("restart_btn");
 const strikeBtn = document.getElementById("strike_btn");
+const dropBtn = document.getElementById("drop_cue_ball_btn");
 
 // canvas dimensions
 const cWidth = gameCanvas.width;
@@ -31,12 +32,14 @@ const pocketD = 10;
 
 let deceleration = document.getElementById("game_deceleration").value;
 
+let gameState = "notStarted";
+
 // message
 const message = document.getElementById("message-box");
 export function updateMsg(msg) {
 	message.innerHTML = msg;
 }
-updateMsg("Press 'start game");
+updateMsg("Press 'start game'");
 
 // cue ball
 const cueBall = new CueBall(
@@ -290,6 +293,8 @@ function calcValuesForCueBall() {
 	changeDirections(cueBall);
 }
 
+let curBallCollisions = [];
+
 let raf;
 // animation
 function draw() {
@@ -301,7 +306,7 @@ function draw() {
 	if (ballsOnTable.length > 1) {
 		for (let i = 0; i < ballsOnTable.length - 1; i++) {
 			for (let j = i + 1; j < ballsOnTable.length; j++) {
-				resolveCollision(ballsOnTable[i], ballsOnTable[j]);
+				resolveCollision(ballsOnTable[i], ballsOnTable[j], curBallCollisions);
 			}
 		}
 	}
@@ -333,6 +338,7 @@ function draw() {
 			}
 		}
 	});
+
 	ballsPotted = wallDeflection(
 		ballsOnTable,
 		tableTop,
@@ -342,6 +348,7 @@ function draw() {
 		height,
 		ballsPotted,
 	);
+
 	// remove potted balls from drawing
 	ballsPotted.forEach((ball) => {
 		if (ballsOnTable.includes(ball)) {
@@ -353,14 +360,42 @@ function draw() {
 	if (ballsOnTable.some((ball) => ball.isMoving)) {
 		raf = window.requestAnimationFrame(draw);
 	} else {
+		// end of play
 		window.cancelAnimationFrame(raf);
+		checkRulesAfter();
 	}
 }
 
+function checkRulesAfter() {
+	// checks if the game finished
+	if (ballsOnTable.length == 1 && ballsOnTable.includes(cueBall)) {
+		gameState = "finished";
+		updateMsg("Game finished!");
+		return;
+	}
+
+	// if white ball was potted
+	if (ballsPotted.includes(cueBall)) {
+		gameState = "dropping cue ball";
+		dropCueBall();
+		return;
+	}
+
+	// if wrong colour was hit but we implement that later
+	// ----
+
+	gameState = "waitingForStrike";
+	updateMsg("Click 'strike ball");
+}
+
 // Moving the white ball
-export function dropCueBall() {
+function dropCueBall() {
 	// this func will be called when the game starts and when the white ball is potted in
 	// this will paint the D, as a very light green implying to drop the white ball inside that,
+
+	updateMsg(
+		"Click inside the 'D' to place the cue ball, then 'drop ball' to place it and continue the game.",
+	);
 
 	// draw the D a lighter colour
 	c.fillStyle = "#80b370";
@@ -379,12 +414,22 @@ export function dropCueBall() {
 	// called 'ball in hand'
 	// white ball will be in there and it is upto the user to move it to continue/start the game.
 	// make this button visible to drop the ball
-	updateMsg("Drop the cue ball inside the D");
-	console.log("count");
-	gameCanvas.addEventListener("click", (e) => {
-		let coords = getCoords(e);
-		console.log(coords);
+
+	// make button visible
+	dropBtn.classList.remove("hidden");
+	dropBtn.addEventListener("click", function () {
+		dropBtn.classList.add("hidden");
+		gameState = "waitingForStrike";
+		updateMsg("Hit the cue ball, be clicking 'strike ball'");
 	});
+
+	if (gameState == "droppingCueBall") {
+		gameCanvas.addEventListener("click", (e) => {
+			let coords = getCoords(e);
+			console.log(coords);
+		});
+	}
+	// once button is clicked to agree to drop then repaint the table and the balls
 }
 
 function getCoords(e) {
@@ -394,53 +439,70 @@ function getCoords(e) {
 	return [(x - pos.x) | 1, (y - pos.y) | 1];
 }
 
-let gameFinished = false;
-let gameWon = false;
 function startGame() {
 	// draw everything
 	clearAll();
-	drawTable();
+	_drawTable();
 	drawAllBalls(ballsOnTable, c);
+
+	gameState = "waitingForStrike";
 
 	// drop cue ball
 	dropCueBall();
 	cueBall.isMoving = true;
-
-	// main loop
-	while (!gameFinished) {
-		if (ballsOnTable.includes(cueBall) && ballsOnTable.size() == 1) {
-			gameFinished = true;
-		}
-		// draw() make balls move, then after that, implement any rules etc.
-		if (ballsOnTable.every((ball) => !ball.isMoving)) {
-			calcValuesForCueBall();
-			cueBall.isMoving = true;
-			raf = window.requestAnimationFrame(draw);
-		}
-	}
-
-	// end game
-	window.cancelAnimationFrame(raf); // dont know if this is really needed here
-	updateMsg("Game finished!!");
+	updateMsg("Hit the cue ball, be clicking 'strike ball'");
 }
+
+// main loop
+// while (!gameFinished) {
+// 	if (ballsOnTable.includes(cueBall) && ballsOnTable.length == 1) {
+// 		gameFinished = true;
+// 		break;
+// 	}
+
+// 	// draw() make balls move, then after that, implement any rules etc.
+// 	if (ballsOnTable.every((ball) => !ball.isMoving)) {
+// 		calcValuesForCueBall();
+// 		cueBall.isMoving = true;
+// 		raf = window.requestAnimationFrame(draw);
+// 	}
+// 	// now after the 'play' implement rules:
+// 	// if cueBall was potted
+// 	if (ballsPotted.includes(cueBall)) {
+// 		dropCueBall();
+// 		cueBall.isMoving = true;
+// 	}
+
+// 	// once rules applied, wait for the user to click strike ball to continue the game and reloop
+// 	while (!strikeBtnClicked) {
+// 		calcValuesForCueBall();
+// 		cueBall.isMoving = true;
+// 		raf = window.requestAnimationFrame(draw);
+// 	}
+// }
+
+// // end game
+// window.cancelAnimationFrame(raf); // dont know if this is really needed here
+// updateMsg("Game finished!!");
 
 // Buttons +  event handlers
 // -------------------------
 // start btn
 startBtn.addEventListener("click", function () {
 	if (!raf) {
-		calcValuesForCueBall();
-		cueBall.isMoving = true;
-		// place white ball down
-		raf = window.requestAnimationFrame(draw);
+		startGame();
 	}
 });
 
 // strike btn
 strikeBtn.addEventListener("click", function () {
 	if (ballsOnTable.every((ball) => !ball.isMoving)) {
+		if (gameState !== "waitingForStrike") return;
+
 		calcValuesForCueBall();
+		ballsPotted = [];
 		cueBall.isMoving = true;
+		gameState = "ballsMoving";
 		raf = window.requestAnimationFrame(draw);
 	}
 });
@@ -450,8 +512,10 @@ restartBtn.addEventListener("click", function () {
 	window.cancelAnimationFrame(raf);
 	clearAll();
 	_drawTable();
-	updateMsg("Press 'start game");
+	updateMsg("Press 'start game' to play again");
 	ballsOnTable = [...allBalls];
+	ballsPotted = [];
+	curBallCollisions = [];
 	ballsOnTable.forEach((ball) => {
 		ball.curX = ball.startX;
 		ball.curY = ball.startY;

@@ -1,5 +1,5 @@
 // makes the balls be able to bounce off eacother
-export function resolveCollision(ball, otherBall) {
+export function resolveCollision(ball, otherBall, curBallCollisions) {
 	if (!ball.isMoving && !otherBall.isMoving) return;
 
 	const deltaX = otherBall.curX - ball.curX;
@@ -35,6 +35,8 @@ export function resolveCollision(ball, otherBall) {
 	otherBall.velocityY += impulse * normalY;
 	ball.isMoving = true;
 	otherBall.isMoving = true;
+
+	curBallCollisions.push([ball, otherBall]);
 }
 
 export function takeBallOffTable(ball, ballsOnTable) {
