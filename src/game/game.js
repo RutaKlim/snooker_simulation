@@ -276,6 +276,12 @@ function _drawTable() {
 _drawTable();
 drawAllBallsAtStartingPos(allBalls, gameCanvas);
 
+function reframe() {
+	clearAll();
+	_drawTable();
+	drawAllBalls(ballsOnTable, c);
+}
+
 // Angle - also for the cue ball
 function calcValuesForCueBall() {
 	cueBall.speed = Number(document.getElementById("game_speed").value);
@@ -298,9 +304,7 @@ let curBallCollisions = [];
 let raf;
 // animation
 function draw() {
-	clearAll();
-	_drawTable();
-	drawAllBalls(ballsOnTable, c);
+	reframe();
 
 	// scan through the moving balls, and see what other balls they hit
 	if (ballsOnTable.length > 1) {
@@ -317,7 +321,7 @@ function draw() {
 			const speed = Math.hypot(ball.velocityX, ball.velocityY);
 			const nextSpeed = speed + deceleration;
 
-			const maxStep = 6;
+			const maxStep = 2;
 			const steps = Math.ceil(speed / maxStep);
 
 			if (speed < 0.001 || nextSpeed < 0.001) {
@@ -335,19 +339,18 @@ function draw() {
 			for (let step = 0; step < steps; step++) {
 				ball.curX += ball.velocityX / steps;
 				ball.curY += ball.velocityY / steps;
+				ballsPotted = wallDeflection(
+					ballsOnTable,
+					tableTop,
+					tableLeft,
+					pocketD,
+					width,
+					height,
+					ballsPotted,
+				);
 			}
 		}
 	});
-
-	ballsPotted = wallDeflection(
-		ballsOnTable,
-		tableTop,
-		tableLeft,
-		pocketD,
-		width,
-		height,
-		ballsPotted,
-	);
 
 	// remove potted balls from drawing
 	ballsPotted.forEach((ball) => {
@@ -366,17 +369,24 @@ function draw() {
 	}
 }
 
+// EDGE CASES
 function checkRulesAfter() {
-	// checks if the game finished
-	if (ballsOnTable.length == 1 && ballsOnTable.includes(cueBall)) {
+	// checks if the game finished/won
+	// if only one ball is left and it's the cue ball
+	if (
+		(ballsOnTable.length == 1 && ballsOnTable.includes(cueBall)) ||
+		ballsOnTable.length == 0
+	) {
 		gameState = "finished";
 		updateMsg("Game finished!");
 		return;
 	}
 
-	// if white ball was potted
-	if (ballsPotted.includes(cueBall)) {
-		gameState = "dropping cue ball";
+	// if white ball was potted, and there is still balls on the table
+	if (ballsPotted.includes(cueBall) && ballsOnTable.length >= 1) {
+		gameState = "droppingCueBall";
+		ballsOnTable.push(cueBall);
+		calcValuesForCueBall();
 		dropCueBall();
 		return;
 	}
@@ -392,6 +402,12 @@ function checkRulesAfter() {
 function dropCueBall() {
 	// this func will be called when the game starts and when the white ball is potted in
 	// this will paint the D, as a very light green implying to drop the white ball inside that,
+
+	// put the cueBall backto the middle and redraw it.
+	cueBall.curX = cueBall.startX;
+	cueBall.curY = cueBall.startY;
+	reframe();
+	cueBall.isMoving = false;
 
 	updateMsg(
 		"Click inside the 'D' to place the cue ball, then 'drop ball' to place it and continue the game.",
@@ -417,20 +433,22 @@ function dropCueBall() {
 
 	// make button visible
 	dropBtn.classList.remove("hidden");
-	dropBtn.addEventListener("click", function () {
-		dropBtn.classList.add("hidden");
-		gameState = "waitingForStrike";
-		updateMsg("Hit the cue ball, be clicking 'strike ball'");
-	});
-
-	if (gameState == "droppingCueBall") {
-		gameCanvas.addEventListener("click", (e) => {
-			let coords = getCoords(e);
-			console.log(coords);
-		});
-	}
-	// once button is clicked to agree to drop then repaint the table and the balls
 }
+
+dropBtn.addEventListener("click", function () {
+	dropBtn.classList.add("hidden");
+	gameState = "waitingForStrike";
+	updateMsg("Hit the cue ball, be clicking 'strike ball'");
+	// reset the table back to normal
+	reframe();
+});
+
+gameCanvas.addEventListener("click", (e) => {
+	if (gameState == "droppingCueBall") {
+		let coords = getCoords(e);
+		console.log(coords);
+	}
+});
 
 function getCoords(e) {
 	const pos = e.target.getBoundingClientRect();
@@ -441,66 +459,35 @@ function getCoords(e) {
 
 function startGame() {
 	// draw everything
-	clearAll();
-	_drawTable();
-	drawAllBalls(ballsOnTable, c);
+	reframe();
 
-	gameState = "waitingForStrike";
+	gameState = "droppingCueBall";
 
 	// drop cue ball
 	dropCueBall();
-	cueBall.isMoving = true;
 	updateMsg("Hit the cue ball, be clicking 'strike ball'");
 }
-
-// main loop
-// while (!gameFinished) {
-// 	if (ballsOnTable.includes(cueBall) && ballsOnTable.length == 1) {
-// 		gameFinished = true;
-// 		break;
-// 	}
-
-// 	// draw() make balls move, then after that, implement any rules etc.
-// 	if (ballsOnTable.every((ball) => !ball.isMoving)) {
-// 		calcValuesForCueBall();
-// 		cueBall.isMoving = true;
-// 		raf = window.requestAnimationFrame(draw);
-// 	}
-// 	// now after the 'play' implement rules:
-// 	// if cueBall was potted
-// 	if (ballsPotted.includes(cueBall)) {
-// 		dropCueBall();
-// 		cueBall.isMoving = true;
-// 	}
-
-// 	// once rules applied, wait for the user to click strike ball to continue the game and reloop
-// 	while (!strikeBtnClicked) {
-// 		calcValuesForCueBall();
-// 		cueBall.isMoving = true;
-// 		raf = window.requestAnimationFrame(draw);
-// 	}
-// }
-
-// // end game
-// window.cancelAnimationFrame(raf); // dont know if this is really needed here
-// updateMsg("Game finished!!");
 
 // Buttons +  event handlers
 // -------------------------
 // start btn
 startBtn.addEventListener("click", function () {
-	if (!raf) {
+	if (!raf && gameState == "notStarted") {
 		startGame();
 	}
 });
 
 // strike btn
 strikeBtn.addEventListener("click", function () {
+	console.log(ballsOnTable.every((ball) => !ball.isMoving));
+	console.log(gameState);
 	if (ballsOnTable.every((ball) => !ball.isMoving)) {
 		if (gameState !== "waitingForStrike") return;
 
+		console.log("Btn is clicked");
 		calcValuesForCueBall();
 		ballsPotted = [];
+		curBallCollisions = [];
 		cueBall.isMoving = true;
 		gameState = "ballsMoving";
 		raf = window.requestAnimationFrame(draw);
@@ -513,6 +500,7 @@ restartBtn.addEventListener("click", function () {
 	clearAll();
 	_drawTable();
 	updateMsg("Press 'start game' to play again");
+	gameState = "notStarted";
 	ballsOnTable = [...allBalls];
 	ballsPotted = [];
 	curBallCollisions = [];

@@ -46,7 +46,7 @@ export function takeBallOffTable(ball, ballsOnTable) {
 	ballsOnTable.pop();
 }
 
-// makes the balls bounce of the walls
+// makes the balls bounce of the walls or be potted
 export function wallDeflection(
 	ballsOnTable,
 	tableTop,
