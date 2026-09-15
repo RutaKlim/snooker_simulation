@@ -9,7 +9,10 @@ DONE 5. make a ball move, and using a button to play
 DONE 6. bounce off the walls
 DONE 7. fix/add deceleration to balls bouncing off walls
 DONE 8. balls bounce of eachother, specifically the cue ball hitting another ball, and the angle being correct.
-9. using the mouse from the user. be able to see a line, and when released, the ball moves (for now keep initial speed fixed).
+9. place the cue ball anywhere within the D.
+10. using the mouse from the user. be able to see a line, and when released, the ball moves (for now keep initial speed fixed).
+   10.1. draw prediction line, that updates live, using the data from the andle input
+
 
 - design snooker icon for fun
 - need to make it so that for the table size you can only give the width, then height adapts as it must be half the size

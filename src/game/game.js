@@ -19,6 +19,13 @@ const restartBtn = document.getElementById("restart_btn");
 const strikeBtn = document.getElementById("strike_btn");
 const dropBtn = document.getElementById("drop_cue_ball_btn");
 
+// inputs
+let speedI = document.getElementById("game_speed");
+let decelerationI = document.getElementById("game_deceleration");
+let deceleration = Number(decelerationI.value);
+let angle_degree = document.getElementById("game_angle_degrees");
+let angleInRad = (Number(angle_degree.value) * Math.PI) / 180;
+
 // canvas dimensions
 const cWidth = gameCanvas.width;
 const cHeight = gameCanvas.height;
@@ -29,8 +36,6 @@ const height = 350;
 const tableLeft = (cWidth - width) / 2;
 const tableTop = (cHeight - height) / 2;
 const pocketD = 10;
-
-let deceleration = document.getElementById("game_deceleration").value;
 
 let gameState = "notStarted";
 
@@ -276,22 +281,62 @@ function _drawTable() {
 _drawTable();
 drawAllBallsAtStartingPos(allBalls, gameCanvas);
 
+// draw contents of table
 function reframe() {
 	clearAll();
+	drawRect();
 	_drawTable();
 	drawAllBalls(ballsOnTable, c);
 }
 
+// draw the D a lighter colour
+function reframeWithLightD() {
+	clearAll();
+	drawRect();
+	_drawTable();
+
+	c.fillStyle = "#80b370";
+	c.beginPath();
+	c.fillStyle = c.arc(
+		tableLeft + width / 5,
+		tableTop + height / 2,
+		height / 6,
+		Math.PI * 1.5,
+		Math.PI / 2,
+		true,
+	);
+	c.fill();
+	drawAllBalls(ballsOnTable, c);
+}
+
+function projectionLine() {
+	reframe();
+
+	let d = 1000;
+	c.beginPath();
+	c.strokeStyle = "white";
+	c.moveTo(cueBall.curX, cueBall.curY);
+	c.lineTo(
+		cueBall.curX + d * Math.cos(angleInRad),
+		cueBall.curY - d * Math.sin(angleInRad),
+	);
+	c.stroke();
+}
+
+angle_degree.addEventListener("input", function () {
+	angleInRad = (Number(angle_degree.value) * Math.PI) / 180;
+	cueBall.direction = angleInRad;
+	// draw the line
+	// then it will be overdrawn once the balls move, but then we'd need to redraw it when the balls stop
+	projectionLine();
+});
+
 // Angle - also for the cue ball
 function calcValuesForCueBall() {
-	cueBall.speed = Number(document.getElementById("game_speed").value);
-	deceleration = Number(document.getElementById("game_deceleration").value);
-	const angle_degree = Number(
-		document.getElementById("game_angle_degrees").value,
-	);
-	cueBall.direction = (angle_degree * Math.PI) / 180;
-	cueBall;
-	cueBall.speed = document.getElementById("game_speed").value;
+	deceleration = Number(decelerationI.value);
+	cueBall.speed = Number(speedI.value);
+	angleInRad = (Number(angle_degree.value) * Math.PI) / 180;
+	cueBall.direction = angleInRad;
 
 	let currentSpeed = Math.sqrt(Math.max(0, cueBall.speed ** 2));
 	cueBall.velocityX = currentSpeed * Math.cos(cueBall.direction);
@@ -398,6 +443,22 @@ function checkRulesAfter() {
 	updateMsg("Click 'strike ball");
 }
 
+function getCoords(e) {
+	const pos = e.target.getBoundingClientRect();
+	let x = e.clientX;
+	let y = e.clientY;
+	return [(x - pos.x) | 1, (y - pos.y) | 1];
+}
+function isCueBallWithinD(coords) {
+	let x = coords[0];
+	let y = coords[1];
+	return (
+		x < tableLeft + width / 5 &&
+		Math.hypot(x - (tableLeft + width / 5), y - (tableTop + height / 2)) <
+			height / 6
+	);
+}
+
 // Moving the white ball
 function dropCueBall() {
 	// this func will be called when the game starts and when the white ball is potted in
@@ -406,26 +467,13 @@ function dropCueBall() {
 	// put the cueBall backto the middle and redraw it.
 	cueBall.curX = cueBall.startX;
 	cueBall.curY = cueBall.startY;
-	reframe();
+	reframeWithLightD();
 	cueBall.isMoving = false;
 
 	updateMsg(
 		"Click inside the 'D' to place the cue ball, then 'drop ball' to place it and continue the game.",
 	);
 
-	// draw the D a lighter colour
-	c.fillStyle = "#80b370";
-	c.beginPath();
-	c.fillStyle = c.arc(
-		tableLeft + width / 5,
-		tableTop + height / 2,
-		height / 6,
-		Math.PI * 1.5,
-		Math.PI / 2,
-		true,
-	);
-	c.fill();
-	drawAllBalls(ballsOnTable, c);
 	// and there will be a button to click, drop ball which will drop the ball and continue play
 	// called 'ball in hand'
 	// white ball will be in there and it is upto the user to move it to continue/start the game.
@@ -440,26 +488,24 @@ dropBtn.addEventListener("click", function () {
 	gameState = "waitingForStrike";
 	updateMsg("Hit the cue ball, be clicking 'strike ball'");
 	// reset the table back to normal
-	reframe();
+	projectionLine();
 });
 
 gameCanvas.addEventListener("click", (e) => {
 	if (gameState == "droppingCueBall") {
 		let coords = getCoords(e);
-		console.log(coords);
+		// only update the coordinates if the ball is inside the D
+		if (isCueBallWithinD(coords)) {
+			cueBall.curX = coords[0];
+			cueBall.curY = coords[1];
+			reframeWithLightD();
+		}
 	}
 });
 
-function getCoords(e) {
-	const pos = e.target.getBoundingClientRect();
-	let x = e.clientX;
-	let y = e.clientY;
-	return [(x - pos.x) | 1, (y - pos.y) | 1];
-}
-
 function startGame() {
 	// draw everything
-	reframe();
+	projectionLine();
 
 	gameState = "droppingCueBall";
 
@@ -479,12 +525,8 @@ startBtn.addEventListener("click", function () {
 
 // strike btn
 strikeBtn.addEventListener("click", function () {
-	console.log(ballsOnTable.every((ball) => !ball.isMoving));
-	console.log(gameState);
 	if (ballsOnTable.every((ball) => !ball.isMoving)) {
 		if (gameState !== "waitingForStrike") return;
-
-		console.log("Btn is clicked");
 		calcValuesForCueBall();
 		ballsPotted = [];
 		curBallCollisions = [];
