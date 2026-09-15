@@ -7,6 +7,7 @@ import { resolveCollision } from "../physics/collision.js";
 import { wallDeflection } from "../physics/collision.js";
 import { takeBallOffTable } from "../physics/collision.js";
 import { changeDirections } from "../physics/ball.js";
+import { resetBall } from "../physics/ball.js";
 
 // VARIABLES
 //--------------------------------------
@@ -25,6 +26,17 @@ let decelerationI = document.getElementById("game_deceleration");
 let deceleration = Number(decelerationI.value);
 let angle_degree = document.getElementById("game_angle_degrees");
 let angleInRad = (Number(angle_degree.value) * Math.PI) / 180;
+
+// score
+let scoreOutput = document.getElementById("score");
+let score = 0;
+scoreOutput.innerHTML = score;
+
+// error messages - show max 5
+let errors = [];
+let errorsCont = document.getElementById("errors_cont");
+
+let currentRedBall = true; // if false, means player must hit a coloured ball
 
 // canvas dimensions
 const cWidth = gameCanvas.width;
@@ -323,11 +335,28 @@ function projectionLine() {
 	c.stroke();
 }
 
+// updates and prints the new errors
+function newError(msg) {
+	errors.unshift(msg);
+	// remove the first/oldest error msg, as only 5 will be displays
+	if (errors.length > 5) errors.pop();
+	errorsCont.replaceChildren();
+	errors.forEach((error) => {
+		const msg = document.createElement("li");
+		msg.innerHTML = `😭 ${error}`;
+		errorsCont.append(msg);
+	});
+	// make the first/latest most visible
+	errorsCont.firstChild.classList.add("text-xl");
+	errorsCont.firstChild.classList.add("text-red-600");
+	errorsCont.firstChild.classList.add("mb-1");
+	errorsCont.firstChild.classList.add("-ml-1");
+}
+
+// draws the projection line everytime the degree is updates
 angle_degree.addEventListener("input", function () {
 	angleInRad = (Number(angle_degree.value) * Math.PI) / 180;
 	cueBall.direction = angleInRad;
-	// draw the line
-	// then it will be overdrawn once the balls move, but then we'd need to redraw it when the balls stop
 	projectionLine();
 });
 
@@ -384,7 +413,7 @@ function draw() {
 			for (let step = 0; step < steps; step++) {
 				ball.curX += ball.velocityX / steps;
 				ball.curY += ball.velocityY / steps;
-				ballsPotted = wallDeflection(
+				wallDeflection(
 					ballsOnTable,
 					tableTop,
 					tableLeft,
@@ -397,7 +426,7 @@ function draw() {
 		}
 	});
 
-	// remove potted balls from drawing
+	// remove potted balls from drawing UNLESS they are still in play (e.g. if reds are still present put colours back)
 	ballsPotted.forEach((ball) => {
 		if (ballsOnTable.includes(ball)) {
 			ballsOnTable.splice(ballsOnTable.indexOf(ball), 1);
@@ -410,12 +439,93 @@ function draw() {
 	} else {
 		// end of play
 		window.cancelAnimationFrame(raf);
+		projectionLine();
 		checkRulesAfter();
 	}
 }
 
 // EDGE CASES
 function checkRulesAfter() {
+	let scoreAddOn = 0;
+	// update score
+	let wasAFault = false;
+	let faultPoints = 4;
+	// user must have hit and potted a red ball
+	if (currentRedBall) {
+		ballsPotted.forEach((ball) => {
+			if (ball.isRed) {
+				scoreAddOn++;
+			} else {
+				wasAFault = true;
+				if (ball == cueBall) {
+					// did not hit any balls and cue ball went straight into pocket
+					if (curBallCollisions.length == 0) {
+						faultPoints = 4;
+						newError(
+							`Did not hit any ball, and cue ball potted, 4 points deducted.`,
+						);
+					} else {
+						// cue ball hit another ball and if that ball's points are higher than 4 then the fault is that
+						let points = curBallCollisions[0][1].points;
+						faultPoints = points > faultPoints ? points : faultPoints;
+						newError(
+							`Cue ball was potted, and an invalid (non-red) ball was hit, ${faultPoints} points deducted.`,
+						);
+					}
+					// potted a coloured ball
+				} else {
+					faultPoints = ball.points > faultPoints ? ball.points : faultPoints;
+					newError(
+						`Potted a coloured ball when was meant to pot a red ball, ${faultPoints} points deducted.`,
+					);
+				}
+			}
+		});
+		// user must have hit a coloured (non-red ball)
+	} else {
+		ballsPotted.forEach((ball) => {
+			// potting more than one colour is a foul
+			if (!ball.isRed && ballsPotted.length == 1) {
+				scoreAddOn += ball.points;
+			} else {
+				wasAFault = true;
+				if (ball == cueBall) {
+					// did not hit any balls and cue ball went straight into pocket
+					if (curBallCollisions.length == 0) {
+						faultPoints = 4;
+						newError(
+							`Did not hit any ball, and cue ball potted, 4 points deducted.`,
+						);
+					} else {
+						// cue ball hit a red ball and if that ball's points are higher than 4 then the fault is that
+						let points = curBallCollisions[0][1].points;
+						faultPoints = points > faultPoints ? points : faultPoints;
+						newError(
+							`Cue ball was potted, and an invalid (red) ball was hit, ${faultPoints} points deducted.`,
+						);
+					}
+					// potted a coloured ball
+				} else {
+					faultPoints = ball.points > faultPoints ? ball.points : faultPoints;
+					newError(
+						`Potted a red ball, when was meant to pot a coloured ball, ${faultPoints} points deducted.`,
+					);
+				}
+			}
+		});
+	}
+
+	if (wasAFault) {
+		score -= faultPoints;
+		currentRedBall = true;
+	} else {
+		score += scoreAddOn;
+		currentRedBall = scoreAddOn > 0 ? !currentRedBall : true;
+	}
+	if (score < 0) score = 0;
+	// update score
+	scoreOutput.innerHTML = score;
+
 	// checks if the game finished/won
 	// if only one ball is left and it's the cue ball
 	if (
@@ -436,11 +546,21 @@ function checkRulesAfter() {
 		return;
 	}
 
-	// if wrong colour was hit but we implement that later
-	// ----
+	// add coloured balls back to the table, if there are still reds remaining
+	if (ballsOnTable.some((ball) => ball.isRed)) {
+		ballsPotted.forEach((ball) => {
+			if (!ball.isRed) {
+				resetBall(ball);
+				ballsOnTable.push(ball);
+				drawAllBalls(ballsOnTable, c);
+			}
+		});
+	}
 
 	gameState = "waitingForStrike";
-	updateMsg("Click 'strike ball");
+	updateMsg(
+		`Click 'strike ball' to pot a ${currentRedBall ? "red" : "coloured (non-red)"} ball`,
+	);
 }
 
 function getCoords(e) {
@@ -471,7 +591,7 @@ function dropCueBall() {
 	cueBall.isMoving = false;
 
 	updateMsg(
-		"Click inside the 'D' to place the cue ball, then 'drop ball' to place it and continue the game.",
+		"Click inside the 'D' to place the cue ball, then 'drop ball' to place it and continue the game. First ball must be a red.",
 	);
 
 	// and there will be a button to click, drop ball which will drop the ball and continue play
@@ -511,7 +631,7 @@ function startGame() {
 
 	// drop cue ball
 	dropCueBall();
-	updateMsg("Hit the cue ball, be clicking 'strike ball'");
+	// updateMsg("Hit the cue ball, be clicking 'strike ball'");
 }
 
 // Buttons +  event handlers

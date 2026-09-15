@@ -62,6 +62,9 @@ export class Ball {
 	get velocityY() {
 		return this._velocityY;
 	}
+	get points() {
+		return this._points;
+	}
 
 	// Setters
 	set radius(radius) {
@@ -90,6 +93,9 @@ export class Ball {
 	}
 	set velocityY(velocityY) {
 		this._velocityY = velocityY;
+	}
+	set points(points) {
+		this._points = points;
 	}
 
 	drawBall(c) {
@@ -148,4 +154,15 @@ export function changeDirections(ball) {
 		ball.velocityX = Math.abs(ball.velocityX);
 		ball.velocityY = Math.abs(ball.velocityY);
 	}
+}
+
+export function resetBall(ball) {
+	ball.curX = ball.startX;
+	ball.curY = ball.startY;
+	ball.velocityX = 0;
+	ball.velocityY = 0;
+	ball.direction = 0;
+	ball.speed = 0;
+	ball.distanceTravelled = 0;
+	ball.isMoving = 0;
 }

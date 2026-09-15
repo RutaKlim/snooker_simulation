@@ -69,7 +69,9 @@ export function wallDeflection(
 			ball.curY < topBorder - pocketD ||
 			ball.curY > bottomBorder + pocketD
 		) {
-			ballsPotted.push(ball);
+			if (!ballsPotted.includes(ball)) {
+				ballsPotted.push(ball);
+			}
 		} else {
 			// X
 			if (
@@ -106,5 +108,5 @@ export function wallDeflection(
 			}
 		}
 	});
-	return ballsPotted;
+	// return ballsPotted;
 }

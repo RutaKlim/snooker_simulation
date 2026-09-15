@@ -383,28 +383,47 @@
 						restart 🔄️
 					</button>
 				</div>
-				<div class="flex mt-10">
-					<div
-						id="message-box"
-						class="bg-emerald-800 py-4 lg:ml-20 ml-5 px-8 text-lg tracking-wide rounded-xl rounded-bl-none"
-					>
-						Press 'start game'
-					</div>
-					<div class="flex items-center ml-5">
-						<button
-							id="drop_cue_ball_btn"
-							class="border text-emerald-950 bg-amber-50 w-40 py-2 pl-2 cursor-pointer rounded-sm hover:scale-105 hidden"
+				<!-- start - msg -->
+				<div class="flex justify-between mt-10">
+					<!-- message -->
+					<div class="flex pr-10">
+						<div
+							id="message-box"
+							class="bg-emerald-800 py-4 ml-5 px-8 text-lg tracking-wide rounded-xl rounded-bl-none"
 						>
-							Drop cue ball 🫳
-						</button>
+							Press 'start game'
+						</div>
+						<!-- button to drop ball - hidden -->
+						<div class="flex items-center ml-5">
+							<button
+								id="drop_cue_ball_btn"
+								class="border text-emerald-950 bg-amber-50 w-40 py-2 pl-2 cursor-pointer rounded-sm hover:scale-105 hidden"
+							>
+								Drop cue ball 🫳
+							</button>
+						</div>
+					</div>
+					<!-- score -->
+					<div>
+						<div
+							class="bg-amber-400 text-black font-bold text-3xl font-sans py-3 px-5 mr-5"
+						>
+							<span id="score"></span
+							><span class="font-medium text-lg pl-1">pts</span>
+						</div>
 					</div>
 				</div>
+				<!-- end - msg -->
 			</section>
 			<!-- start - canvas -->
 			<div class="flex justify-center items-center w-full mt-8 mb-7">
 				<canvas id="game_canvas" width="900" height="550"></canvas>
 			</div>
 			<!-- end - canvas -->
+			<!-- start - stats and errors -->
+			<!-- error messages -->
+			<ul id="errors_cont" class="text-md text-red-800 tracking-wide"></ul>
+			<!-- end - stats and errors -->
 		</section>
 	</body>
 </html>
