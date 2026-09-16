@@ -76,15 +76,6 @@ const yellowBall = new Ball(
 	tableTop + (height * 2) / 3,
 );
 
-const brownBall = new Ball(
-	"saddlebrown",
-	false,
-	3,
-	true,
-	tableLeft + width / 5,
-	tableTop + height / 2,
-);
-
 const greenBall = new Ball(
 	"darkgreen",
 	false,
@@ -92,6 +83,15 @@ const greenBall = new Ball(
 	true,
 	tableLeft + width / 5,
 	tableTop + height / 3,
+);
+
+const brownBall = new Ball(
+	"saddlebrown",
+	false,
+	4,
+	true,
+	tableLeft + width / 5,
+	tableTop + height / 2,
 );
 
 const blueBall = new Ball(
@@ -481,8 +481,24 @@ function checkRulesAfter() {
 				}
 			}
 		});
-		// user must have hit a coloured (non-red ball)
+		// even if a ball wasn't potted, the user should still get penalised for their first contact ball
+		if (
+			!wasAFault &&
+			curBallCollisions.length > 0 &&
+			curBallCollisions[0][0] == cueBall &&
+			!curBallCollisions[0][1].isRed
+		) {
+			wasAFault = true;
+			faultPoints =
+				curBallCollisions[0][1].points > faultPoints
+					? curBallCollisions[0][1].points
+					: faultPoints;
+			newError(
+				`Cueball's first contact was a coloured (non-red) ball, ${faultPoints} deducted.`,
+			);
+		}
 	} else {
+		// user must have potted a coloured (non-red ball)
 		ballsPotted.forEach((ball) => {
 			// potting more than one colour is a foul
 			if (!ball.isRed && ballsPotted.length == 1) {
@@ -513,6 +529,23 @@ function checkRulesAfter() {
 				}
 			}
 		});
+		// even if a ball wasn't potted, the user should still get penalised for their first contact ball
+		if (
+			!wasAFault &&
+			curBallCollisions.length > 0 &&
+			curBallCollisions[0][0] == cueBall &&
+			curBallCollisions[0][1].isRed
+		) {
+			wasAFault = true;
+			faultPoints =
+				curBallCollisions[0][1].points > faultPoints
+					? curBallCollisions[0][1].points
+					: faultPoints;
+
+			newError(
+				`Cueball's first contact was a red ball, ${faultPoints} deducted.`,
+			);
+		}
 	}
 
 	if (wasAFault) {
@@ -520,7 +553,7 @@ function checkRulesAfter() {
 		currentRedBall = true;
 	} else {
 		score += scoreAddOn;
-		currentRedBall = scoreAddOn > 0 ? !currentRedBall : true;
+		currentRedBall = !currentRedBall;
 	}
 	if (score < 0) score = 0;
 	// update score
