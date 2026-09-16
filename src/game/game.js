@@ -25,7 +25,7 @@ let speedI = document.getElementById("game_speed");
 let decelerationI = document.getElementById("game_deceleration");
 let deceleration = Number(decelerationI.value);
 let angle_degree = document.getElementById("game_angle_degrees");
-let angleInRad = (Number(angle_degree.value) * Math.PI) / 180;
+let angleInRad = toRad(Number(angle_degree.value));
 
 // score
 let scoreOutput = document.getElementById("score");
@@ -281,6 +281,7 @@ function clearAll() {
 
 // draw rect
 function drawRect() {
+	c.beginPath();
 	c.strokeStyle = "wheat";
 	c.strokeRect(0, 0, cWidth, cHeight);
 }
@@ -321,6 +322,10 @@ function reframeWithLightD() {
 	drawAllBalls(ballsOnTable, c);
 }
 
+function toRad(degree) {
+	return (degree * Math.PI) / 180;
+}
+
 function projectionLine() {
 	reframe();
 
@@ -353,9 +358,9 @@ function newError(msg) {
 	errorsCont.firstChild.classList.add("-ml-1");
 }
 
-// draws the projection line everytime the degree is updates
+// draws the projection line everytime the degree is updated
 angle_degree.addEventListener("input", function () {
-	angleInRad = (Number(angle_degree.value) * Math.PI) / 180;
+	angleInRad = toRad(Number(angle_degree.value));
 	cueBall.direction = angleInRad;
 	projectionLine();
 });
@@ -364,7 +369,6 @@ angle_degree.addEventListener("input", function () {
 function calcValuesForCueBall() {
 	deceleration = Number(decelerationI.value);
 	cueBall.speed = Number(speedI.value);
-	angleInRad = (Number(angle_degree.value) * Math.PI) / 180;
 	cueBall.direction = angleInRad;
 
 	let currentSpeed = Math.sqrt(Math.max(0, cueBall.speed ** 2));
@@ -543,7 +547,7 @@ function checkRulesAfter() {
 					: faultPoints;
 
 			newError(
-				`Cueball's first contact was a red ball, ${faultPoints} deducted.`,
+				`Cueball's first contact was a red ball, ${faultPoints} points deducted.`,
 			);
 		}
 	}
@@ -553,7 +557,7 @@ function checkRulesAfter() {
 		currentRedBall = true;
 	} else {
 		score += scoreAddOn;
-		currentRedBall = !currentRedBall;
+		currentRedBall = scoreAddOn == 0 ? true : !currentRedBall;
 	}
 	if (score < 0) score = 0;
 	// update score
@@ -602,6 +606,7 @@ function getCoords(e) {
 	let y = e.clientY;
 	return [(x - pos.x) | 1, (y - pos.y) | 1];
 }
+
 function isCueBallWithinD(coords) {
 	let x = coords[0];
 	let y = coords[1];
@@ -627,11 +632,6 @@ function dropCueBall() {
 		"Click inside the 'D' to place the cue ball, then 'drop ball' to place it and continue the game. First ball must be a red.",
 	);
 
-	// and there will be a button to click, drop ball which will drop the ball and continue play
-	// called 'ball in hand'
-	// white ball will be in there and it is upto the user to move it to continue/start the game.
-	// make this button visible to drop the ball
-
 	// make button visible
 	dropBtn.classList.remove("hidden");
 }
@@ -639,7 +639,7 @@ function dropCueBall() {
 dropBtn.addEventListener("click", function () {
 	dropBtn.classList.add("hidden");
 	gameState = "waitingForStrike";
-	updateMsg("Hit the cue ball, be clicking 'strike ball'");
+	updateMsg("Hit a red ball, be clicking 'strike ball'");
 	// reset the table back to normal
 	projectionLine();
 });
@@ -653,6 +653,26 @@ gameCanvas.addEventListener("click", (e) => {
 			cueBall.curY = coords[1];
 			reframeWithLightD();
 		}
+	}
+});
+
+// when the gameState is 'waitingForStrike' then using the mouse, make an angle that gets applied to the projection line as well
+let canMoveAngle = true;
+// for moving the mouse
+gameCanvas.addEventListener("mousemove", (e) => {
+	if (gameState == "waitingForStrike" && canMoveAngle) {
+		let mouse = getCoords(e);
+		angleInRad = Math.atan2(cueBall.curY - mouse[1], mouse[0] - cueBall.curX);
+		cueBall.direction = angleInRad;
+
+		projectionLine();
+	}
+});
+
+// click to toggle whether the ball is
+gameCanvas.addEventListener("click", () => {
+	if (gameState == "waitingForStrike") {
+		canMoveAngle = !canMoveAngle;
 	}
 });
 
@@ -685,6 +705,7 @@ strikeBtn.addEventListener("click", function () {
 		curBallCollisions = [];
 		cueBall.isMoving = true;
 		gameState = "ballsMoving";
+		canMoveAngle = true;
 		raf = window.requestAnimationFrame(draw);
 	}
 });
@@ -693,6 +714,7 @@ strikeBtn.addEventListener("click", function () {
 restartBtn.addEventListener("click", function () {
 	window.cancelAnimationFrame(raf);
 	clearAll();
+	drawRect();
 	_drawTable();
 	updateMsg("Press 'start game' to play again");
 	gameState = "notStarted";

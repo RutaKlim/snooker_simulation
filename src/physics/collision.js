@@ -2,15 +2,16 @@
 export function resolveCollision(ball, otherBall, curBallCollisions) {
 	if (!ball.isMoving && !otherBall.isMoving) return;
 
-	const deltaX = otherBall.curX - ball.curX;
-	const deltaY = otherBall.curY - ball.curY;
-	const distance = Math.hypot(deltaX, deltaY);
+	const dx = otherBall.curX - ball.curX;
+	const dy = otherBall.curY - ball.curY;
+	const distance = Math.hypot(dx, dy);
 	const minDistance = ball.radius + otherBall.radius;
 
 	if (distance === 0 || distance >= minDistance) return;
 
-	const normalX = deltaX / distance;
-	const normalY = deltaY / distance;
+	const angle = Math.atan2(dy, dx);
+	const normalX = Math.cos(angle);
+	const normalY = Math.sin(angle);
 	const overlap = minDistance - distance;
 
 	// Separate the balls so the same impact is not resolved repeatedly.
@@ -108,5 +109,4 @@ export function wallDeflection(
 			}
 		}
 	});
-	// return ballsPotted;
 }
