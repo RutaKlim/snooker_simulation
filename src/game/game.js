@@ -14,6 +14,17 @@ import { resetBall } from "../physics/ball.js";
 const gameCanvas = document.getElementById("game_canvas");
 const c = gameCanvas.getContext("2d");
 
+// canvas dimensions
+const cWidth = gameCanvas.width;
+const cHeight = gameCanvas.height;
+
+// snooker table dimensions
+const width = 700;
+const height = 350;
+const tableLeft = (cWidth - width) / 2;
+const tableTop = (cHeight - height) / 2;
+const pocketD = 10;
+
 // buttons
 const startBtn = document.getElementById("start_btn");
 const restartBtn = document.getElementById("restart_btn");
@@ -27,36 +38,29 @@ let deceleration = Number(decelerationI.value);
 let angle_degree = document.getElementById("game_angle_degrees");
 let angleInRad = toRad(Number(angle_degree.value));
 
+let canMoveAngle = true;
+
 // score
 let scoreOutput = document.getElementById("score");
 let score = 0;
 scoreOutput.innerHTML = score;
 
-// error messages - show max 5
+let gameState = "notStarted";
+
+// whether user must hit red or coloured ball
+let currentRedBall = true;
+
+// error messages - max 5 at a time
 let errors = [];
 let errorsCont = document.getElementById("errors_cont");
 
-let currentRedBall = true; // if false, means player must hit a coloured ball
+let curBallCollisions = [];
 
-// canvas dimensions
-const cWidth = gameCanvas.width;
-const cHeight = gameCanvas.height;
-
-// snooker table dimensions
-const width = 700;
-const height = 350;
-const tableLeft = (cWidth - width) / 2;
-const tableTop = (cHeight - height) / 2;
-const pocketD = 10;
-
-let gameState = "notStarted";
-
-// message
+// instruction message
 const message = document.getElementById("message-box");
-export function updateMsg(msg) {
+function updateMsg(msg) {
 	message.innerHTML = msg;
 }
-updateMsg("Press 'start game'");
 
 // cue ball
 const cueBall = new CueBall(
@@ -273,39 +277,45 @@ let ballsOnTable = [...allBalls];
 let ballsPotted = [];
 
 // functions
-// -----------------------
+// ------------------------------------
+
+// converts degrees to radians
+function toRad(degree) {
+	return (degree * Math.PI) / 180;
+}
 
 function clearAll() {
 	c.clearRect(0, 0, cWidth, cHeight);
 }
 
-// draw rect
-function drawRect() {
+// draw border
+function drawBorder() {
 	c.beginPath();
 	c.strokeStyle = "wheat";
 	c.strokeRect(0, 0, cWidth, cHeight);
 }
-drawRect();
+drawBorder();
 
-// Draw table and balls in starting position
+// draw table
 function _drawTable() {
 	drawTable(gameCanvas, tableLeft, tableTop, width, height, pocketD);
 }
+// draw table and balls in starting position
 _drawTable();
 drawAllBallsAtStartingPos(allBalls, gameCanvas);
 
-// draw contents of table
-function reframe() {
+// redraw canvas content
+function redraw() {
 	clearAll();
-	drawRect();
+	drawBorder();
 	_drawTable();
 	drawAllBalls(ballsOnTable, c);
 }
 
-// draw the D a lighter colour
-function reframeWithLightD() {
+// draw the canvas content but D as a lighter colour
+function redrawWithLightD() {
 	clearAll();
-	drawRect();
+	drawBorder();
 	_drawTable();
 
 	c.fillStyle = "#80b370";
@@ -322,12 +332,9 @@ function reframeWithLightD() {
 	drawAllBalls(ballsOnTable, c);
 }
 
-function toRad(degree) {
-	return (degree * Math.PI) / 180;
-}
-
+// draws the projection line from the cue ball
 function projectionLine() {
-	reframe();
+	redraw();
 
 	let d = 1000;
 	c.beginPath();
@@ -343,7 +350,7 @@ function projectionLine() {
 // updates and prints the new errors
 function newError(msg) {
 	errors.unshift(msg);
-	// remove the first/oldest error msg, as only 5 will be displays
+	// remove the first/oldest error msg, as only 5 will be displayed
 	if (errors.length > 5) errors.pop();
 	errorsCont.replaceChildren();
 	errors.forEach((error) => {
@@ -358,17 +365,17 @@ function newError(msg) {
 	errorsCont.firstChild.classList.add("-ml-1");
 }
 
-// draws the projection line everytime the degree is updated
+// draws the projection line everytime the degree input is updated
 angle_degree.addEventListener("input", function () {
 	angleInRad = toRad(Number(angle_degree.value));
 	cueBall.direction = angleInRad;
 	projectionLine();
 });
 
-// Angle - also for the cue ball
+// updates the cue ball with values from the inputs
 function calcValuesForCueBall() {
 	deceleration = Number(decelerationI.value);
-	cueBall.speed = Number(speedI.value);
+	cueBall.speed = Number(speedI.value) < 15 ? Number(speedI.value) : 15;
 	cueBall.direction = angleInRad;
 
 	let currentSpeed = Math.sqrt(Math.max(0, cueBall.speed ** 2));
@@ -377,14 +384,12 @@ function calcValuesForCueBall() {
 	changeDirections(cueBall);
 }
 
-let curBallCollisions = [];
-
+// animation while balls moving
 let raf;
-// animation
 function draw() {
-	reframe();
+	redraw();
 
-	// scan through the moving balls, and see what other balls they hit
+	// resolve any ball collisions
 	if (ballsOnTable.length > 1) {
 		for (let i = 0; i < ballsOnTable.length - 1; i++) {
 			for (let j = i + 1; j < ballsOnTable.length; j++) {
@@ -393,13 +398,14 @@ function draw() {
 		}
 	}
 
-	// update the velocity vectors and the current location of the balls to make them move
+	// updates the velocity vectors and current coordinates of the balls to make them move
 	ballsOnTable.forEach((ball) => {
 		if (ball.isMoving) {
 			const speed = Math.hypot(ball.velocityX, ball.velocityY);
 			const nextSpeed = speed + deceleration;
 
-			const maxStep = 2;
+			// steps added so that on high speeds, the balls don't exceed their boundaries
+			const maxStep = 3;
 			const steps = Math.ceil(speed / maxStep);
 
 			if (speed < 0.001 || nextSpeed < 0.001) {
@@ -430,7 +436,8 @@ function draw() {
 		}
 	});
 
-	// remove potted balls from drawing UNLESS they are still in play (e.g. if reds are still present put colours back)
+	// remove potted balls from table UNLESS they are still in play
+	// (e.g.if reds are still present then put colours back on table, otherwise no)
 	ballsPotted.forEach((ball) => {
 		if (ballsOnTable.includes(ball)) {
 			ballsOnTable.splice(ballsOnTable.indexOf(ball), 1);
@@ -443,15 +450,14 @@ function draw() {
 	} else {
 		// end of play
 		window.cancelAnimationFrame(raf);
-		projectionLine();
 		checkRulesAfter();
+		projectionLine();
 	}
 }
 
-// EDGE CASES
+// EDGE CASES + RULES
 function checkRulesAfter() {
 	let scoreAddOn = 0;
-	// update score
 	let wasAFault = false;
 	let faultPoints = 4;
 	// user must have hit and potted a red ball
@@ -469,7 +475,7 @@ function checkRulesAfter() {
 							`Did not hit any ball, and cue ball potted, 4 points deducted.`,
 						);
 					} else {
-						// cue ball hit another ball and if that ball's points are higher than 4 then the fault is that
+						// cue ball hit another ball and if that ball's points are higher than 4 then the fault is that ball's points
 						let points = curBallCollisions[0][1].points;
 						faultPoints = points > faultPoints ? points : faultPoints;
 						newError(
@@ -485,7 +491,7 @@ function checkRulesAfter() {
 				}
 			}
 		});
-		// even if a ball wasn't potted, the user should still get penalised for their first contact ball
+		// fault if first ball of contact is not a red
 		if (
 			!wasAFault &&
 			curBallCollisions.length > 0 &&
@@ -517,7 +523,7 @@ function checkRulesAfter() {
 							`Did not hit any ball, and cue ball potted, 4 points deducted.`,
 						);
 					} else {
-						// cue ball hit a red ball and if that ball's points are higher than 4 then the fault is that
+						// cue ball hit a red ball and if that ball's points are higher than 4 then the fault is that ball's points
 						let points = curBallCollisions[0][1].points;
 						faultPoints = points > faultPoints ? points : faultPoints;
 						newError(
@@ -533,7 +539,7 @@ function checkRulesAfter() {
 				}
 			}
 		});
-		// even if a ball wasn't potted, the user should still get penalised for their first contact ball
+		// fault if first ball of contact is a red
 		if (
 			!wasAFault &&
 			curBallCollisions.length > 0 &&
@@ -552,6 +558,7 @@ function checkRulesAfter() {
 		}
 	}
 
+	// updating the score
 	if (wasAFault) {
 		score -= faultPoints;
 		currentRedBall = true;
@@ -560,11 +567,9 @@ function checkRulesAfter() {
 		currentRedBall = scoreAddOn == 0 ? true : !currentRedBall;
 	}
 	if (score < 0) score = 0;
-	// update score
 	scoreOutput.innerHTML = score;
 
-	// checks if the game finished/won
-	// if only one ball is left and it's the cue ball
+	// checks if the game finished/won and if only one ball remains and it's the cue ball
 	if (
 		(ballsOnTable.length == 1 && ballsOnTable.includes(cueBall)) ||
 		ballsOnTable.length == 0
@@ -607,6 +612,7 @@ function getCoords(e) {
 	return [(x - pos.x) | 1, (y - pos.y) | 1];
 }
 
+// returns boolean - true if coordinate is within the D
 function isCueBallWithinD(coords) {
 	let x = coords[0];
 	let y = coords[1];
@@ -617,22 +623,19 @@ function isCueBallWithinD(coords) {
 	);
 }
 
-// Moving the white ball
+// moving the cue ball to drop it within the D
 function dropCueBall() {
-	// this func will be called when the game starts and when the white ball is potted in
-	// this will paint the D, as a very light green implying to drop the white ball inside that,
-
-	// put the cueBall backto the middle and redraw it.
+	// put the cueBall back to the middle and redraw it.
 	cueBall.curX = cueBall.startX;
 	cueBall.curY = cueBall.startY;
-	reframeWithLightD();
+	redrawWithLightD();
 	cueBall.isMoving = false;
 
 	updateMsg(
 		"Click inside the 'D' to place the cue ball, then 'drop ball' to place it and continue the game. First ball must be a red.",
 	);
 
-	// make button visible
+	// make drop button visible
 	dropBtn.classList.remove("hidden");
 }
 
@@ -640,24 +643,21 @@ dropBtn.addEventListener("click", function () {
 	dropBtn.classList.add("hidden");
 	gameState = "waitingForStrike";
 	updateMsg("Hit a red ball, be clicking 'strike ball'");
-	// reset the table back to normal
 	projectionLine();
 });
 
+// updates the cue ball to where the click was
 gameCanvas.addEventListener("click", (e) => {
 	if (gameState == "droppingCueBall") {
 		let coords = getCoords(e);
-		// only update the coordinates if the ball is inside the D
 		if (isCueBallWithinD(coords)) {
 			cueBall.curX = coords[0];
 			cueBall.curY = coords[1];
-			reframeWithLightD();
+			redrawWithLightD();
 		}
 	}
 });
 
-// when the gameState is 'waitingForStrike' then using the mouse, make an angle that gets applied to the projection line as well
-let canMoveAngle = true;
 // for moving the mouse
 gameCanvas.addEventListener("mousemove", (e) => {
 	if (gameState == "waitingForStrike" && canMoveAngle) {
@@ -669,7 +669,7 @@ gameCanvas.addEventListener("mousemove", (e) => {
 	}
 });
 
-// click to toggle whether the ball is
+// click to toggle to keep the projection line fixed
 gameCanvas.addEventListener("click", () => {
 	if (gameState == "waitingForStrike") {
 		canMoveAngle = !canMoveAngle;
@@ -677,18 +677,11 @@ gameCanvas.addEventListener("click", () => {
 });
 
 function startGame() {
-	// draw everything
 	projectionLine();
-
 	gameState = "droppingCueBall";
-
-	// drop cue ball
 	dropCueBall();
-	// updateMsg("Hit the cue ball, be clicking 'strike ball'");
 }
 
-// Buttons +  event handlers
-// -------------------------
 // start btn
 startBtn.addEventListener("click", function () {
 	if (!raf && gameState == "notStarted") {
@@ -714,13 +707,15 @@ strikeBtn.addEventListener("click", function () {
 restartBtn.addEventListener("click", function () {
 	window.cancelAnimationFrame(raf);
 	clearAll();
-	drawRect();
+	drawBorder();
 	_drawTable();
 	updateMsg("Press 'start game' to play again");
 	gameState = "notStarted";
 	ballsOnTable = [...allBalls];
 	ballsPotted = [];
 	curBallCollisions = [];
+	errors = [];
+	errorsCont.replaceChildren();
 	ballsOnTable.forEach((ball) => {
 		ball.curX = ball.startX;
 		ball.curY = ball.startY;
