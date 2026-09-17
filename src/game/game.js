@@ -5,7 +5,6 @@ import { drawAllBallsAtStartingPos } from "../render/drawBall.js";
 import { drawAllBalls } from "../render/drawBall.js";
 import { resolveCollision } from "../physics/collision.js";
 import { wallDeflection } from "../physics/collision.js";
-import { takeBallOffTable } from "../physics/collision.js";
 import { changeDirections } from "../physics/ball.js";
 import { resetBall } from "../physics/ball.js";
 

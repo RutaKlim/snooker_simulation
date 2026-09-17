@@ -5,7 +5,7 @@ export function drawAllBallsAtStartingPos(balls, table) {
 	});
 }
 
-export function drawBallAtStartingPos(ball, c) {
+function drawBallAtStartingPos(ball, c) {
 	drawBallSpec(ball.colour, ball.startX, ball.startY, c);
 }
 
@@ -23,7 +23,7 @@ export function drawAllBalls(balls, c) {
 	});
 }
 
-export function drawBall(ball, c) {
+function drawBall(ball, c) {
 	c.fillStyle = ball.colour;
 	c.beginPath();
 	c.arc(ball.curX, ball.curY, ball.radius, 0, Math.PI * 2, true);

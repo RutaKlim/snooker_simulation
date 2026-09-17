@@ -8,7 +8,6 @@ export function drawTable(
 ) {
 	const c = table.getContext("2d");
 	// 12 * 6 ft
-	// i did 600 * 300 px
 
 	const width = tableWidth;
 	const height = tableHeight;
@@ -48,8 +47,6 @@ export function drawTable(
 	);
 	c.lineTo(originX - borderW, originY);
 	c.fill();
-
-	// pocket padding colours
 
 	// table
 	c.fillStyle = "green";
@@ -99,8 +96,8 @@ export function drawTable(
 	c.lineTo(originX + pocketD, originY + tableHeight - 15 - pocketD);
 	c.lineTo(originX - 3, originY + tableHeight - pocketD);
 
-	// ---
 	c.stroke();
+	// ---
 
 	// pockets
 	function drawPocket(x, y) {
@@ -109,14 +106,14 @@ export function drawTable(
 		c.arc(originX + x, originY + y, pocketD, 0, Math.PI * 2, true);
 		c.fill();
 	}
-	drawPocket(0 + 5, 0 + 5);
-	drawPocket(tableWidth / 2, 0);
-	drawPocket(tableWidth - 5, 0 + 5);
-	drawPocket(tableWidth - 5, tableHeight - 5);
-	drawPocket(tableWidth / 2, tableHeight);
-	drawPocket(0 + 5, tableHeight - 5);
+	drawPocket(0 + 5, 0 + 5); // top left
+	drawPocket(tableWidth / 2, 0); // top middle
+	drawPocket(tableWidth - 5, 0 + 5); // top right
+	drawPocket(tableWidth - 5, tableHeight - 5); // bottom right
+	drawPocket(tableWidth / 2, tableHeight); // bottom middle
+	drawPocket(0 + 5, tableHeight - 5); // bottom left
 
-	// lines
+	// table lines
 	//------------------------------------------------
 	c.strokeStyle = "#ccc";
 
@@ -139,7 +136,7 @@ export function drawTable(
 	);
 	c.stroke();
 
-	// faint locations of where the coloured balls go
+	//dots of coloured ball's starting positions
 	//------------------------------------------------
 	c.fillStyle = "#999";
 

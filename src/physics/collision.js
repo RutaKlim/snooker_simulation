@@ -1,4 +1,4 @@
-// makes the balls be able to bounce off eacother
+// makes the balls deflect off eachother when in contact
 export function resolveCollision(ball, otherBall, curBallCollisions) {
 	if (!ball.isMoving && !otherBall.isMoving) return;
 
@@ -14,7 +14,7 @@ export function resolveCollision(ball, otherBall, curBallCollisions) {
 	const normalY = Math.sin(angle);
 	const overlap = minDistance - distance;
 
-	// Separate the balls so the same impact is not resolved repeatedly.
+	// separate the balls so the same impact is not resolved repeatedly
 	ball.curX -= (normalX * overlap) / 2;
 	ball.curY -= (normalY * overlap) / 2;
 	otherBall.curX += (normalX * overlap) / 2;
@@ -25,10 +25,10 @@ export function resolveCollision(ball, otherBall, curBallCollisions) {
 	const velocityAlongNormal =
 		relativeVelocityX * normalX + relativeVelocityY * normalY;
 
-	// Do not bounce balls that are already moving apart.
+	// do not bounce balls that are already moving apart
 	if (velocityAlongNormal >= 0) return;
 
-	// Equal masses and a perfectly elastic collision.
+	// equal masses and a perfectly elastic collision
 	const impulse = -(2 * velocityAlongNormal) / 2;
 	ball.velocityX -= impulse * normalX;
 	ball.velocityY -= impulse * normalY;
@@ -47,7 +47,7 @@ export function takeBallOffTable(ball, ballsOnTable) {
 	ballsOnTable.pop();
 }
 
-// makes the balls bounce of the walls or be potted
+// makes the balls deflect of the walls or be potted
 export function wallDeflection(
 	ballsOnTable,
 	tableTop,
@@ -63,7 +63,7 @@ export function wallDeflection(
 	const leftBorder = tableLeft + pocketD + ballRadius;
 	const rightBorder = tableLeft + width - pocketD - ballRadius;
 	ballsOnTable.forEach((ball) => {
-		// POCKETS
+		// pockets
 		if (
 			ball.curX < leftBorder - pocketD ||
 			ball.curX > rightBorder + pocketD ||
@@ -73,6 +73,7 @@ export function wallDeflection(
 			if (!ballsPotted.includes(ball)) {
 				ballsPotted.push(ball);
 			}
+			// wall deflection
 		} else {
 			// X
 			if (

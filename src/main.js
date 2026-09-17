@@ -1,10 +1,8 @@
 import "./style.css";
-// import viteLogo from "./assets/vite.svg";
 
 import "./render/drawTable.js";
 import "./render/drawBall.js";
 import "./physics/ball.js";
-import "./physics/cue.js";
 import "./physics/collision.js";
 
 import "./learning/1_moving_ball.js";
