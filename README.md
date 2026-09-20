@@ -30,11 +30,11 @@ The snooker simulation includes:
 
 Drew out the table, borders, lines, pockets, ball positions and balls.
 
-[Sketch of a snooker table, showing measurements of the table and proportions to calculate where the lines and balls are positioned.](src/assets/table-drawing.PNG)
+![Sketch of a snooker table, showing measurements of the table and proportions to calculate where the lines and balls are positioned.](src/assets/table-drawing.PNG)
 
 How I worked out where the red balls go, using Pythagoras Theorem:
 
-[Sketch of a all the red balls on the table, and how I calculated the distances between them with working out.](src/assets/red-balls-drawing.PNG)
+![Sketch of a all the red balls on the table, and how I calculated the distances between them with working out.](src/assets/red-balls-drawing.PNG)
 
 ## #2 Making a ball move
 
@@ -102,7 +102,7 @@ const distance = Math.hypot(dx, dy);
 
 For elastic collision between the balls I had to do a bit of research to fully understand it, so I got most of my information from this wikepedia site: https://en.wikipedia.org/wiki/Elastic_collision
 
-For this simulation, collision between balls is modelled as a perfectly elastic collsion between equal-mass balls, which simplified most equations due to equal mass.
+For this simulation, collision between balls is modelled as a perfectly elastic collision between equal-mass balls, which simplified most equations due to equal mass.
 
 !!!!!!!!!!!!!!!!!!!!! NEED TO STUDY THIS FULLY !!!!!!!!!!!!!!!
 
@@ -118,4 +118,9 @@ And with a horizontal wall:
 
 And in the case that the ball crosses the wall boundary, the balls are moved back to the border so that they do not embedd inside the cushion.
 
-[Sketch of a ball reflecting against all sides (left, right, top and bottom)](src\assets\wall-deflection-drawing.PNG)
+![Sketch of a ball reflecting against all sides (left, right, top and bottom)](src\assets\wall-deflection-drawing.PNG)
+
+## #6 Physics Assumptions
+
+
+
