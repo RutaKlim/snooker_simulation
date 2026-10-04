@@ -14,7 +14,7 @@ export function resolveCollision(ball, otherBall, curBallCollisions) {
 	const normalY = Math.sin(angle);
 	const overlap = minDistance - distance;
 
-	// separate the balls so the same impact is not resolved repeatedly
+	// seperate the balls so the same impact is not resolved repeatedly
 	ball.curX -= (normalX * overlap) / 2;
 	ball.curY -= (normalY * overlap) / 2;
 	otherBall.curX += (normalX * overlap) / 2;

@@ -374,7 +374,8 @@ angle_degree.addEventListener("input", function () {
 // updates the cue ball with values from the inputs
 function calcValuesForCueBall() {
 	deceleration = Number(decelerationI.value);
-	cueBall.speed = Number(speedI.value) < 15 ? Number(speedI.value) : 15;
+	cueBall.speed =
+		Math.abs(Number(speedI.value)) < 15 ? Number(speedI.value) : 15;
 	cueBall.direction = angleInRad;
 
 	let currentSpeed = Math.sqrt(Math.max(0, cueBall.speed ** 2));

@@ -26,6 +26,22 @@ The snooker simulation includes:
 - Fault play detection and with error messages
 - live instruction messages telling player how to play step-by-step
 
+### What I learnt
+
+This project allowed me to apply mathematics and physics using tools I wanted to develop upon.
+
+Main concepts I implemented were:
+
+- Vectors
+- Pythagoras
+- Trigonometry
+- Dot products
+- Vector projection
+- Elastic collision
+- Collision detection
+
+What I learnt the most was about elastic collision between the balls.
+
 ## #1 Create the board
 
 Drew out the table, borders, lines, pockets, ball positions and balls.
@@ -90,17 +106,18 @@ const dy = otherBall.curY - ball.curY;
 const distance = Math.hypot(dx, dy);
 ```
 
-Then once a collision detected, I calculate the collision normal which is the direction where one of the balls will go.
+Then once a collision is detected, the collision normal which is the direction where one of the balls will go, is calculated.
 
 ```
-const dx = otherBall.curX - ball.curX;
-const dy = otherBall.curY - ball.curY;
-const distance = Math.hypot(dx, dy);
+	const relativeVelocityX = otherBall.velocityX - ball.velocityX;
+	const relativeVelocityY = otherBall.velocityY - ball.velocityY;
+	const velocityAlongNormal =
+		relativeVelocityX * normalX + relativeVelocityY * normalY;
 ```
 
 ## #4 Elastic Collision
 
-For elastic collision between the balls I had to do a bit of research to fully understand it, so I got most of my information from this wikepedia site: https://en.wikipedia.org/wiki/Elastic_collision
+For elastic collision between the balls I had to do research to fully understand it, so I got most of my information from this wikepedia site: https://en.wikipedia.org/wiki/Elastic_collision
 
 For this simulation, collision between balls is modelled as a perfectly elastic collision between equal-mass balls, which simplified most equations due to equal mass.
 
@@ -116,11 +133,23 @@ And with a horizontal wall:
 
 `vy --> -vy`
 
-And in the case that the ball crosses the wall boundary, the balls are moved back to the border so that they do not embedd inside the cushion.
+And in the case that the ball crosses the wall boundary, the balls are moved back to the border so that they do not embed behind the cushion.
 
-![Sketch of a ball reflecting against all sides (left, right, top and bottom)](src\assets\wall-deflection-drawing.PNG)
+![Sketch of a ball reflecting against all sides (left, right, top and bottom)](src/assets/wall-deflection-drawing.PNG)
 
 ## #6 Physics Assumptions
 
+To keep the project from not getting too complicated, I have several assumptions that:
 
+- all balls have equal mass
+- ball and wall collisions are perfectly elastic
+- cushion collisions are perfectly reflective
+- friction is approximated using constant deceleration
+- spin and rotational motion are not currently simulated
 
+## Tools and languages used
+
+- JavaScript - game logic and physics
+- HTML Canvas - design + drawings
+- Tailwind CSS - styling
+- Vite - development/ build tooling
