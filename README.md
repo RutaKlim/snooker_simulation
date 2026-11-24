@@ -68,16 +68,16 @@ In code:
 
 ### Deceleration/friction
 
-In this simulation friction was approximated using constant deceleration. I scaled both velocitys simultaneously by doing, so that the ball's direction of movement doesn't alter:
+In this simulation friction was approximated using constant deceleration. I scaled both velocities simultaneously by doing, so that the ball's direction of movement doesn't alter:
 
-`
+```
 const scale = nextSpeed / speed;
 
 ball.velocityX _= scale;
 ball.velocityY _= scale;
-`
+```
 
-## #3 Ball Collision Detection
+## #3 Ball Collision Detection and Elastic Collision
 
 While the balls move, a function checks at every drawing cycle, whether two balls are in contact which is activated whether: `distance between balls < ball.radius + otherBall.radius`
 
@@ -106,22 +106,35 @@ const dy = otherBall.curY - ball.curY;
 const distance = Math.hypot(dx, dy);
 ```
 
-Then once a collision is detected, the collision normal which is the direction where one of the balls will go, is calculated.
-
-```
-	const relativeVelocityX = otherBall.velocityX - ball.velocityX;
-	const relativeVelocityY = otherBall.velocityY - ball.velocityY;
-	const velocityAlongNormal =
-		relativeVelocityX * normalX + relativeVelocityY * normalY;
-```
-
-## #4 Elastic Collision
+### Elastic Collision
 
 For elastic collision between the balls I had to do research to fully understand it, so I got most of my information from this wikepedia site: https://en.wikipedia.org/wiki/Elastic_collision
 
 For this simulation, collision between balls is modelled as a perfectly elastic collision between equal-mass balls, which simplified most equations due to equal mass.
 
-!!!!!!!!!!!!!!!!!!!!! NEED TO STUDY THIS FULLY !!!!!!!!!!!!!!!
+Once a ball collision is detected, the collision normal which is the direction where one of the balls will go, is calculated and applied.
+
+### What is calculated
+
+#### #1 Collision normal
+
+This is the direction between the two ball's centres
+
+#### #2 Relative Velocity
+
+#### #3 Velocity along the normal
+
+How fast the balls collide along the collision normal
+
+#### #4 Impluse
+
+This is the change in momentum caused by the collision so now the balls will move in different directions after their velocities are changed
+
+```
+const relativeVelocityX = otherBall.velocityX - ball.velocityX;
+const relativeVelocityY = otherBall.velocityY - ball.velocityY;
+const velocityAlongNormal = relativeVelocityX * normalX + relativeVelocityY * normalY;
+```
 
 ## #5 Cushion Deflection
 
