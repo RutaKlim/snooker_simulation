@@ -70,12 +70,12 @@ In code:
 
 In this simulation friction was approximated using constant deceleration. I scaled both velocitys simultaneously by doing, so that the ball's direction of movement doesn't alter:
 
-`
+```
 const scale = nextSpeed / speed;
 
 ball.velocityX _= scale;
 ball.velocityY _= scale;
-`
+```
 
 ## #3 Ball Collision Detection
 
